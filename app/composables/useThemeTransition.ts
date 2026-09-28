@@ -2,6 +2,16 @@ import type { ThemeName } from "~/types/foldcare"
 
 export type ThemeTransitionDirection = "to-light" | "to-dark" | null
 
+interface PageViewTransition {
+    finished: Promise<void>
+}
+
+type DocumentWithViewTransitions = Document & {
+    startViewTransition?: (
+        updatePage: () => void | Promise<void>
+    ) => PageViewTransition
+}
+
 export function useThemeTransition() {
     const { currentTheme, saveThemePreference } = useThemePreference()
     const transitionDirection = useState<ThemeTransitionDirection>(
@@ -32,9 +42,39 @@ export function useThemeTransition() {
 
         transitionDirection.value =
             nextTheme === "light" ? "to-light" : "to-dark"
-        await new Promise((resolve) => window.setTimeout(resolve, 260))
+
+        await nextTick()
+
+        const pageDocument = document as DocumentWithViewTransitions
+        if (!pageDocument.startViewTransition) return
+
+        document.documentElement.classList.add("theme-view-transition-active")
+
+        try {
+            const pageTransition = pageDocument.startViewTransition(
+                async () => {
+                    saveThemePreference(nextTheme)
+                    await nextTick()
+                }
+            )
+            await pageTransition.finished
+        } finally {
+            document.documentElement.classList.remove(
+                "theme-view-transition-active"
+            )
+
+            if (currentTheme.value === nextTheme) {
+                transitionDirection.value = null
+            }
+        }
+    }
+
+    function completeThemeTransition() {
+        if (!transitionDirection.value) return
+
+        const nextTheme: ThemeName =
+            transitionDirection.value === "to-light" ? "light" : "dark"
         saveThemePreference(nextTheme)
-        await new Promise((resolve) => window.setTimeout(resolve, 720))
         transitionDirection.value = null
     }
 
@@ -42,6 +82,7 @@ export function useThemeTransition() {
         currentTheme,
         transitionDirection: readonly(transitionDirection),
         isThemeTransitionRunning,
+        completeThemeTransition,
         switchTheme
     }
 }

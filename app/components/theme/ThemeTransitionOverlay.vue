@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { transitionDirection } = useThemeTransition()
+const { transitionDirection, completeThemeTransition } = useThemeTransition()
 
 const isVisible = computed(() => transitionDirection.value !== null)
 const isSwitchingToLight = computed(
@@ -8,23 +8,20 @@ const isSwitchingToLight = computed(
 </script>
 
 <template>
-    <Transition name="theme-overlay">
+    <div
+        v-if="isVisible"
+        class="theme-transition-overlay pointer-events-none fixed inset-0 z-[120] overflow-hidden"
+        aria-hidden="true"
+    >
         <div
-            v-if="isVisible"
-            class="pointer-events-none fixed inset-0 z-[120] overflow-hidden"
-            aria-hidden="true"
-        >
-            <div
-                class="theme-wipe absolute inset-0"
-                :class="
-                    isSwitchingToLight
-                        ? 'theme-wipe-light bg-[#f8f3ea]'
-                        : 'theme-wipe-dark bg-[#151318]'
-                "
-            />
-            <RunningCatRow
-                :cat-color="isSwitchingToLight ? 'white' : 'black'"
-            />
-        </div>
-    </Transition>
+            class="theme-wipe absolute inset-0"
+            :class="
+                isSwitchingToLight
+                    ? 'bg-[#f6f0e8]'
+                    : 'theme-wipe-dark bg-[#151318]'
+            "
+            @animationend="completeThemeTransition"
+        />
+        <RunningCatColumn :cat-color="isSwitchingToLight ? 'white' : 'black'" />
+    </div>
 </template>
