@@ -1,0 +1,40 @@
+{
+    "name": "foldcare",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+    },
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier . --write",
+        "format:check": "prettier . --check",
+        "preview": "nuxt preview",
+        "typecheck": "nuxt typecheck",
+        "check": "npm run format:check && npm run lint && npm run typecheck && npm run build"
+    },
+    "dependencies": {
+        "@nuxt/image": "^2.1.0",
+        "nuxt": "4.5.2",
+        "vue": "^3.5.41",
+        "vue-router": "^5.3.1"
+    },
+    "devDependencies": {
+        "@nuxt/eslint": "^1.10.0",
+        "@tailwindcss/vite": "^4.3.3",
+        "eslint": "^10.9.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.6",
+        "prettier": "^3.9.0",
+        "prettier-plugin-tailwindcss": "^0.7.1",
+        "tailwindcss": "^4.3.3",
+        "typescript": "5.9.3",
+        "vue-eslint-parser": "^10.3.0",
+        "vue-tsc": "^3.3.11"
+    }
+}
