@@ -16,13 +16,18 @@ export const siteText = {
             fr: "Soins quotidiens",
             zh: "日常护理"
         },
-        nutrition: { en: "Food", ar: "الغذاء", fr: "Alimentation", zh: "饮食" },
+        nutrition: {
+            en: "Nutrition",
+            ar: "الغذاء",
+            fr: "Alimentation",
+            zh: "饮食"
+        },
         tracker: { en: "Tracker", ar: "المتابعة", fr: "Suivi", zh: "记录" },
         lotus: { en: "Lotus", ar: "لوتس", fr: "Lotus", zh: "Lotus" },
         sources: {
-            en: "Sources",
+            en: "Resources",
             ar: "المصادر",
-            fr: "Sources",
+            fr: "Ressources",
             zh: "资料来源"
         },
         about: { en: "About", ar: "عن الموقع", fr: "À propos", zh: "关于" },
@@ -80,16 +85,16 @@ export const siteText = {
             zh: "真实的猫，真实的故事，清楚的兽医证据。"
         },
         title: {
-            en: "This is Lotus. He's why FoldCare exists.",
-            ar: "هذا لوتس. هو السبب وراء إنشاء FoldCare.",
-            fr: "Voici Lotus. C'est pour lui que FoldCare existe.",
-            zh: "这是 Lotus。FoldCare 因他而诞生。"
+            en: "This is Lotus. He's why FelisFold exists.",
+            ar: "هذا لوتس. هو السبب وراء إنشاء FelisFold.",
+            fr: "Voici Lotus. C'est pour lui que FelisFold existe.",
+            zh: "这是 Lotus。FelisFold 因他而诞生。"
         },
         intro: {
-            en: "I started FoldCare after noticing changes in my own cat — how he moved, jumped, ate and behaved. His story leads into simple, evidence-led guides about Scottish Fold health, daily care and quality of life.",
-            ar: "بدأت FoldCare بعدما لاحظت تغيّرات على قطّي: في حركته وقفزه وأكله وتصرفاته. قصة لوتس تقود إلى أدلة بسيطة ومدعومة بالمصادر عن صحة Scottish Fold والعناية اليومية وجودة الحياة.",
-            fr: "J'ai créé FoldCare après avoir remarqué des changements chez mon propre chat : sa façon de bouger, sauter, manger et se comporter. Son histoire mène vers des guides simples et sourcés sur la santé du Scottish Fold, les soins quotidiens et la qualité de vie.",
-            zh: "我在自己的猫身上注意到一些变化——走路、跳跃、进食和日常行为——于是开始做 FoldCare。Lotus 的故事会带你进入清楚、基于证据的苏格兰折耳猫健康、日常护理与生活质量指南。"
+            en: "I started FelisFold after noticing changes in my own cat — how he moved, jumped, ate and behaved. His story leads into simple, evidence-led guides about Scottish Fold health, daily care and quality of life.",
+            ar: "بدأت FelisFold بعدما لاحظت تغيّرات على قطّي: في حركته وقفزه وأكله وتصرفاته. قصة لوتس تقود إلى أدلة بسيطة ومدعومة بالمصادر عن صحة Scottish Fold والعناية اليومية وجودة الحياة.",
+            fr: "J'ai créé FelisFold après avoir remarqué des changements chez mon propre chat : sa façon de bouger, sauter, manger et se comporter. Son histoire mène vers des guides simples et sourcés sur la santé du Scottish Fold, les soins quotidiens et la qualité de vie.",
+            zh: "我在自己的猫身上注意到一些变化——走路、跳跃、进食和日常行为——于是开始做 FelisFold。Lotus 的故事会带你进入清楚、基于证据的苏格兰折耳猫健康、日常护理与生活质量指南。"
         },
         meetLotus: {
             en: "Meet Lotus",

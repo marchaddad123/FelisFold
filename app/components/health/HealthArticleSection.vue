@@ -35,13 +35,13 @@ const toneClasses = computed(() => {
 
 <template>
     <section
-        class="rounded-[2rem] border p-0 sm:p-0"
+        class="border p-0 sm:p-0"
         :class="[
             toneClasses,
             section.tone && section.tone !== 'plain' ? 'p-6 sm:p-8' : ''
         ]"
     >
-        <h2 class="text-ink text-2xl font-semibold tracking-tight">
+        <h2 class="font-editorial text-ink text-3xl tracking-tight">
             {{ heading }}
         </h2>
         <div class="text-muted mt-4 space-y-4 text-[1.02rem] leading-8">
@@ -58,7 +58,7 @@ const toneClasses = computed(() => {
                 :key="bullet"
                 class="flex gap-3 leading-7"
             >
-                <span class="text-lilac mt-1" aria-hidden="true">●</span>
+                <span class="text-peach mt-1" aria-hidden="true">●</span>
                 <span>{{ bullet }}</span>
             </li>
         </ul>

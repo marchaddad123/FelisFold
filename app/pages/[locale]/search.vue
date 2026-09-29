@@ -1,74 +1,81 @@
 <script setup lang="ts">
 import { isLanguageCode } from "~/utils/languages"
-
 definePageMeta({ validate: (route) => isLanguageCode(route.params.locale) })
-const { languageCode } = useCurrentLanguage()
 const searchQuery = ref("")
-const { matchingTopics } = useSiteSearch(searchQuery)
-
-const pageText = computed(() => {
-    if (languageCode.value === "ar")
-        return {
-            eyebrow: "بحث",
-            title: "ابحث عن الدليل الذي تحتاجه.",
-            copy: "ابحث حسب العرض أو الحالة أو السؤال اليومي.",
-            emptyTitle: "لا يوجد دليل مطابق بعد.",
-            emptyCopy: "جرّب كلمة أوسع مثل ألم أو قيء أو كلى أو أذن."
-        }
-    if (languageCode.value === "fr")
-        return {
-            eyebrow: "Recherche",
-            title: "Trouvez le guide dont vous avez besoin.",
-            copy: "Recherchez par symptôme, maladie ou question du quotidien.",
-            emptyTitle: "Aucun guide correspondant pour le moment.",
-            emptyCopy:
-                "Essayez un mot plus large comme douleur, vomissement, rein ou oreille."
-        }
-    if (languageCode.value === "zh")
-        return {
-            eyebrow: "搜索",
-            title: "找到你需要的指南。",
-            copy: "可以按症状、疾病或日常问题搜索。",
-            emptyTitle: "暂时没有匹配的指南。",
-            emptyCopy: "试试更宽泛的词，例如疼痛、呕吐、肾脏或耳朵。"
-        }
-    return {
-        eyebrow: "Search",
-        title: "Find the guide you need.",
-        copy: "Search by symptom, condition or everyday concern.",
-        emptyTitle: "No matching guide yet.",
-        emptyCopy: "Try a broader word like pain, vomit, kidney or ear."
-    }
-})
-
+const { matchingResults } = useSiteSearch(searchQuery)
+const { localizedPath } = useLocalizedPath()
 usePageSeo({
-    title: computed(() => `${pageText.value.eyebrow} — FoldCare`),
-    description: computed(() => pageText.value.copy)
+    title: "Search FelisFold",
+    description:
+        "Search Scottish Fold health guides, nutrition, Lotus's story, glossary terms, resources and frequently asked questions."
 })
 </script>
 
 <template>
-    <div class="mx-auto max-w-5xl px-4 py-12 sm:px-5 sm:py-16 lg:px-8 lg:py-20">
-        <AppSectionHeading
-            :eyebrow="pageText.eyebrow"
-            :title="pageText.title"
-            :copy="pageText.copy"
-        />
-        <SiteSearchForm v-model="searchQuery" class="mt-8" />
-        <div class="mt-8 grid gap-5 md:grid-cols-2">
-            <HealthTopicCard
-                v-for="topic in matchingTopics"
-                :key="topic.slug"
-                :topic="topic"
-            />
-        </div>
-        <div
-            v-if="matchingTopics.length === 0"
-            class="border-border bg-paper mt-8 rounded-[2rem] border border-dashed p-8 text-center"
-        >
-            <FoldCatMascot size="sm" />
-            <p class="text-ink mt-3 font-medium">{{ pageText.emptyTitle }}</p>
-            <p class="text-muted mt-2 text-sm">{{ pageText.emptyCopy }}</p>
+    <div class="paper-texture px-4 py-12 sm:px-6 sm:py-16">
+        <div class="mx-auto max-w-5xl">
+            <div class="grid gap-8 lg:grid-cols-[0.65fr_1.35fr] lg:items-end">
+                <div>
+                    <p
+                        class="text-peach text-xs font-bold tracking-[0.2em] uppercase"
+                    >
+                        Search FelisFold
+                    </p>
+                    <h1
+                        class="font-editorial text-ink mt-3 text-5xl leading-none sm:text-6xl"
+                    >
+                        Find what your cat needs.
+                    </h1>
+                    <p class="text-muted mt-4 leading-7">
+                        Search health topics, nutrition, Lotus's story, glossary
+                        terms, resources and FAQs.
+                    </p>
+                </div>
+                <SiteSearchForm v-model="searchQuery" />
+            </div>
+            <p class="text-muted mt-10 text-sm">
+                {{ matchingResults.length }}
+                {{ matchingResults.length === 1 ? "result" : "results" }}
+            </p>
+            <div
+                v-if="matchingResults.length"
+                class="divide-border border-border mt-3 divide-y border-y"
+            >
+                <NuxtLink
+                    v-for="result in matchingResults"
+                    :key="result.id"
+                    :to="localizedPath(result.path)"
+                    class="group grid gap-2 py-5 sm:grid-cols-[10rem_1fr_auto] sm:items-start sm:gap-5"
+                    ><span
+                        class="text-peach text-xs font-bold tracking-[0.14em] uppercase"
+                        >{{ result.kind }}</span
+                    ><span
+                        ><strong
+                            class="font-editorial text-ink block text-2xl"
+                            >{{ result.title }}</strong
+                        ><span class="text-muted mt-1 block leading-6">{{
+                            result.summary
+                        }}</span></span
+                    ><span
+                        class="text-peach text-xl transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
+                        aria-hidden="true"
+                        >→</span
+                    ></NuxtLink
+                >
+            </div>
+            <div
+                v-else
+                class="border-border mt-8 border border-dashed p-8 text-center"
+            >
+                <FoldCatMascot size="sm" />
+                <h2 class="font-editorial text-ink mt-4 text-2xl">
+                    No match yet.
+                </h2>
+                <p class="text-muted mt-2">
+                    Try a broader word such as pain, vomit, food, kidney or
+                    mood.
+                </p>
+            </div>
         </div>
     </div>
 </template>

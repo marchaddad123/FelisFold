@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { isLanguageCode } from "~/utils/languages"
+import { licensedScottishFoldPhotos } from "~/data/cats"
 
 definePageMeta({ validate: (route) => isLanguageCode(route.params.locale) })
 const { languageCode } = useCurrentLanguage()
@@ -138,7 +139,7 @@ const pageText = computed(() => {
 })
 
 usePageSeo({
-    title: computed(() => `${pageText.value.title} — FoldCare`),
+    title: computed(() => `${pageText.value.title} — FelisFold`),
     description: computed(() => pageText.value.copy)
 })
 </script>
@@ -186,6 +187,64 @@ usePageSeo({
                 </ul>
             </section>
         </div>
+
+        <section
+            class="border-border bg-paper mt-10 rounded-[2rem] border p-6 sm:p-8"
+        >
+            <h2 class="text-ink text-2xl font-semibold">
+                Licensed photo credits
+            </h2>
+            <p class="text-muted mt-3 max-w-3xl leading-7">
+                These Scottish Fold photos are illustrative. Appearance does not
+                verify pedigree, Fd/Fd genotype, or an individual cat's health
+                history.
+            </p>
+            <ul class="mt-6 grid gap-4 sm:grid-cols-2">
+                <li
+                    v-for="cat in licensedScottishFoldPhotos"
+                    :key="cat.id"
+                    class="border-border grid grid-cols-[5rem_1fr] gap-4 rounded-2xl border p-3"
+                >
+                    <NuxtImg
+                        :src="cat.photo"
+                        :alt="cat.name"
+                        :width="cat.width"
+                        :height="cat.height"
+                        sizes="80px"
+                        format="webp"
+                        :quality="76"
+                        loading="lazy"
+                        class="aspect-square size-20 rounded-xl object-cover"
+                    />
+                    <div class="min-w-0">
+                        <h3 class="text-ink font-semibold">{{ cat.name }}</h3>
+                        <p class="text-muted mt-1 text-sm">
+                            {{ cat.attribution }} · {{ cat.license }}
+                        </p>
+                        <div
+                            class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm"
+                        >
+                            <a
+                                v-if="cat.sourceUrl"
+                                :href="cat.sourceUrl"
+                                target="_blank"
+                                rel="noreferrer"
+                                class="text-lilac underline-offset-4 hover:underline"
+                                >Source</a
+                            >
+                            <a
+                                v-if="cat.licenseUrl"
+                                :href="cat.licenseUrl"
+                                target="_blank"
+                                rel="noreferrer"
+                                class="text-lilac underline-offset-4 hover:underline"
+                                >License</a
+                            >
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </section>
 
         <section class="bg-sage-soft mt-10 rounded-[2rem] p-6 sm:p-8">
             <h2 class="text-ink text-2xl font-semibold">

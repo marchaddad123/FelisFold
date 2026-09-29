@@ -16,7 +16,7 @@ defineProps<{
             >
                 <NuxtImg
                     src="/images/lotus/lotus-with-creator-younger.jpg"
-                    alt="Lotus with the FoldCare creator when Lotus was younger"
+                    alt="Lotus with the FelisFold creator when Lotus was younger"
                     width="1152"
                     height="1536"
                     sizes="100vw md:50vw lg:560px"
@@ -36,7 +36,7 @@ defineProps<{
             >
                 <NuxtImg
                     src="/images/lotus/lotus-with-creator.jpg"
-                    alt="Lotus with the FoldCare creator more recently"
+                    alt="Lotus with the FelisFold creator more recently"
                     width="864"
                     height="1536"
                     sizes="100vw md:50vw lg:560px"

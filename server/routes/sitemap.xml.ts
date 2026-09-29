@@ -17,6 +17,7 @@ const pagePaths = [
     "/tracker",
     "/lotus",
     "/sources",
+    "/resources",
     "/about",
     "/search"
 ]

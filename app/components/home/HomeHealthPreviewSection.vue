@@ -1,68 +1,55 @@
 <script setup lang="ts">
 import { healthTopics } from "~/data/healthTopics"
-import { siteText, textForLanguage } from "~/data/siteText"
-
-const { languageCode } = useCurrentLanguage()
 const { localizedPath } = useLocalizedPath()
-const exploreHealth = computed(() =>
-    textForLanguage(siteText.home.exploreHealth, languageCode.value)
-)
-
-const heading = computed(() =>
-    languageCode.value === "ar"
-        ? "ابدأ بالأسئلة الأكثر أهمية."
-        : languageCode.value === "fr"
-          ? "Commencez par les questions les plus importantes."
-          : languageCode.value === "zh"
-            ? "先从最重要的问题开始。"
-            : "Start with the questions that matter most."
-)
-const copy = computed(() =>
-    languageCode.value === "ar"
-        ? "أدلة واضحة لعائلات Scottish Fold مع مصادر ولغة بسيطة."
-        : languageCode.value === "fr"
-          ? "Des guides clairs pour les familles de Scottish Fold, avec sources et langage simple."
-          : languageCode.value === "zh"
-            ? "给苏格兰折耳猫家庭的清楚指南，带来源，用简单语言解释。"
-            : "Clear guides for Scottish Fold families, with sources and plain language."
-)
-const eyebrow = computed(() =>
-    languageCode.value === "ar"
-        ? "مكتبة الصحة"
-        : languageCode.value === "fr"
-          ? "Bibliothèque santé"
-          : languageCode.value === "zh"
-            ? "健康资料库"
-            : "Health library"
-)
 </script>
 
 <template>
-    <section class="bg-paper/35 py-14 sm:py-18 lg:py-24">
-        <div class="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
-            <div class="flex items-end justify-between gap-6">
-                <AppSectionHeading
-                    :eyebrow="eyebrow"
-                    :title="heading"
-                    :copy="copy"
-                />
-                <FoldCatMascot class="hidden lg:block" size="md" />
-            </div>
-            <div class="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                <HealthTopicCard
-                    v-for="topic in healthTopics.slice(0, 6)"
-                    :key="topic.slug"
-                    :topic="topic"
-                />
-            </div>
-            <div class="mt-7">
-                <NuxtLink
-                    :to="localizedPath('/health')"
-                    class="border-border bg-paper text-ink hover:border-lilac/30 inline-flex min-h-12 items-center rounded-full border px-5 font-medium transition"
-                >
-                    {{ exploreHealth }} →
-                </NuxtLink>
+    <section
+        class="dark-panel paper-texture relative overflow-hidden px-4 pt-14 sm:px-6 sm:pt-20 lg:px-8"
+    >
+        <div
+            class="pointer-events-none absolute start-[4%] top-10 rotate-[-14deg] text-4xl text-[#ef9c79]/20"
+            aria-hidden="true"
+        >
+            &#128062;
+        </div>
+        <div class="mx-auto max-w-[90rem] pb-14 sm:pb-20">
+            <div class="grid gap-7 lg:grid-cols-[0.72fr_1.8fr] lg:items-end">
+                <div>
+                    <p
+                        class="text-xs font-bold tracking-[0.2em] text-[#efb79e] uppercase"
+                    >
+                        Health guides
+                    </p>
+                    <h2
+                        class="font-editorial mt-3 text-4xl leading-[0.98] text-[#fffaf1] sm:text-5xl"
+                    >
+                        Real information for real cats.
+                    </h2>
+                    <p class="mt-4 max-w-md leading-7 text-[#c8d5cf]">
+                        Clear, practical and evidence-led guides on the
+                        questions that matter most for Scottish Folds.
+                    </p>
+                    <NuxtLink
+                        :to="localizedPath('/health')"
+                        class="mt-6 inline-flex min-h-12 items-center rounded-full bg-[#fffaf1] px-6 font-bold text-[#18231f]"
+                        >Explore all health topics
+                        <span class="ms-3" aria-hidden="true">→</span></NuxtLink
+                    >
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <HealthTopicCard
+                        v-for="topic in healthTopics.slice(0, 4)"
+                        :key="topic.slug"
+                        :topic="topic"
+                        dark
+                    />
+                </div>
             </div>
         </div>
+        <WavySectionDivider
+            tone="paper"
+            class="-mx-4 w-[calc(100%+2rem)] sm:-mx-6 sm:w-[calc(100%+3rem)] lg:-mx-8 lg:w-[calc(100%+4rem)]"
+        />
     </section>
 </template>

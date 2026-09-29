@@ -24,9 +24,9 @@ const reviewedLabel = computed(() => {
 </script>
 
 <template>
-    <aside class="border-border bg-paper rounded-[2rem] border p-6 sm:p-8">
+    <aside class="border-border bg-paper paper-texture border p-6 sm:p-8">
         <div class="flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-ink text-xl font-semibold">{{ heading }}</h2>
+            <h2 class="font-editorial text-ink text-2xl">{{ heading }}</h2>
             <p v-if="reviewedOn" class="text-muted text-xs">
                 {{ reviewedLabel }}: {{ reviewedOn }}
             </p>
@@ -45,7 +45,22 @@ const reviewedLabel = computed(() => {
                 >
                     {{ source.name }}
                 </a>
-                <p class="text-muted mt-1 text-sm">{{ source.organization }}</p>
+                <dl
+                    class="text-muted mt-2 grid gap-x-4 gap-y-1 text-xs sm:grid-cols-3"
+                >
+                    <div>
+                        <dt class="sr-only">Source type</dt>
+                        <dd>{{ source.type ?? "Veterinary reference" }}</dd>
+                    </div>
+                    <div>
+                        <dt class="sr-only">Publication</dt>
+                        <dd>{{ source.organization }}</dd>
+                    </div>
+                    <div>
+                        <dt class="sr-only">Year</dt>
+                        <dd>{{ source.year ?? "Current online reference" }}</dd>
+                    </div>
+                </dl>
             </li>
         </ul>
     </aside>

@@ -1,50 +1,25 @@
 <script setup lang="ts">
-const { languageCode } = useCurrentLanguage()
+const props = withDefaults(defineProps<{ days?: number }>(), { days: 7 })
 const { latestWeight, countEntriesByType } = useHealthTracker()
-
 const cards = computed(() => [
     {
-        label:
-            languageCode.value === "ar"
-                ? "وجبات خلال 30 يوماً"
-                : languageCode.value === "fr"
-                  ? "Repas sur 30 jours"
-                  : languageCode.value === "zh"
-                    ? "30 天内进餐"
-                    : "Meals in 30 days",
-        value: countEntriesByType("meal", 30)
+        icon: "◉",
+        label: "Meals",
+        value: countEntriesByType("meal", props.days)
     },
     {
-        label:
-            languageCode.value === "ar"
-                ? "حالات قيء"
-                : languageCode.value === "fr"
-                  ? "Vomissements"
-                  : languageCode.value === "zh"
-                    ? "呕吐次数"
-                    : "Vomiting events",
-        value: countEntriesByType("vomit", 30)
+        icon: "↝",
+        label: "Vomiting",
+        value: countEntriesByType("vomit", props.days)
     },
     {
-        label:
-            languageCode.value === "ar"
-                ? "ملاحظات حركة"
-                : languageCode.value === "fr"
-                  ? "Notes mobilité"
-                  : languageCode.value === "zh"
-                    ? "活动记录"
-                    : "Mobility notes",
-        value: countEntriesByType("mobility", 30)
+        icon: "↗",
+        label: "Mobility notes",
+        value: countEntriesByType("mobility", props.days)
     },
     {
-        label:
-            languageCode.value === "ar"
-                ? "آخر وزن"
-                : languageCode.value === "fr"
-                  ? "Dernier poids"
-                  : languageCode.value === "zh"
-                    ? "最新体重"
-                    : "Latest weight",
+        icon: "⚖",
+        label: "Latest weight",
         value: latestWeight.value?.amount
             ? `${latestWeight.value.amount} ${latestWeight.value.unit ?? "kg"}`
             : "—"
@@ -54,16 +29,24 @@ const cards = computed(() => [
 
 <template>
     <section
-        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
-        aria-label="30 day tracker summary"
+        class="grid grid-cols-2 gap-3 lg:grid-cols-4"
+        :aria-label="`${days} day tracker summary`"
     >
         <article
             v-for="card in cards"
             :key="card.label"
-            class="border-border bg-paper rounded-[1.6rem] border p-5"
+            class="border-border bg-paper border p-4 sm:p-5"
         >
-            <p class="text-muted text-sm">{{ card.label }}</p>
-            <p class="text-ink mt-2 text-2xl font-semibold">{{ card.value }}</p>
+            <div class="flex items-center justify-between gap-3">
+                <span class="text-peach text-xl" aria-hidden="true">{{
+                    card.icon
+                }}</span
+                ><span class="text-muted text-xs">{{ days }} days</span>
+            </div>
+            <p class="font-editorial text-ink mt-4 text-3xl">
+                {{ card.value }}
+            </p>
+            <p class="text-muted mt-1 text-sm">{{ card.label }}</p>
         </article>
     </section>
 </template>

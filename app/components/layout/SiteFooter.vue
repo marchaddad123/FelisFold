@@ -3,50 +3,115 @@ import { siteText, textForLanguage } from "~/data/siteText"
 
 const { languageCode } = useCurrentLanguage()
 const { localizedPath } = useLocalizedPath()
-const medicalNote = computed(() =>
-    textForLanguage(siteText.common.medicalNote, languageCode.value)
-)
-const sourcesLabel = computed(() =>
-    textForLanguage(siteText.navigation.sources, languageCode.value)
-)
-const aboutLabel = computed(() =>
-    textForLanguage(siteText.navigation.about, languageCode.value)
-)
+const footerGroups = computed(() => [
+    {
+        title:
+            languageCode.value === "fr"
+                ? "Explorer"
+                : languageCode.value === "ar"
+                  ? "استكشف"
+                  : languageCode.value === "zh"
+                    ? "浏览"
+                    : "Explore",
+        links: [
+            [
+                textForLanguage(siteText.navigation.home, languageCode.value),
+                "/"
+            ],
+            [
+                textForLanguage(siteText.navigation.health, languageCode.value),
+                "/health"
+            ],
+            [
+                textForLanguage(
+                    siteText.navigation.nutrition,
+                    languageCode.value
+                ),
+                "/nutrition"
+            ],
+            [
+                textForLanguage(
+                    siteText.navigation.tracker,
+                    languageCode.value
+                ),
+                "/tracker"
+            ]
+        ]
+    },
+    {
+        title:
+            languageCode.value === "fr"
+                ? "À propos"
+                : languageCode.value === "ar"
+                  ? "عن الموقع"
+                  : languageCode.value === "zh"
+                    ? "关于"
+                    : "About",
+        links: [
+            [
+                textForLanguage(siteText.navigation.lotus, languageCode.value),
+                "/lotus"
+            ],
+            [
+                textForLanguage(siteText.navigation.about, languageCode.value),
+                "/about"
+            ],
+            [
+                textForLanguage(
+                    siteText.navigation.sources,
+                    languageCode.value
+                ),
+                "/resources"
+            ],
+            [
+                textForLanguage(siteText.navigation.search, languageCode.value),
+                "/search"
+            ]
+        ]
+    }
+])
 </script>
 
 <template>
-    <footer class="border-border bg-paper/60 mt-16 border-t sm:mt-20">
-        <div
-            class="text-muted mx-auto grid max-w-7xl gap-7 px-4 py-9 text-sm sm:px-5 sm:py-10 md:grid-cols-[1.4fr_1fr] lg:px-8"
-        >
-            <div>
-                <div class="flex items-center gap-2">
-                    <span aria-hidden="true">🐾</span>
-                    <p class="text-ink font-semibold">FoldCare</p>
+    <footer>
+        <NewsletterBand />
+        <div class="bg-[#08251f] px-4 py-10 text-[#d9e5df] sm:px-6 lg:px-8">
+            <div
+                class="mx-auto grid max-w-[90rem] gap-10 md:grid-cols-[1.4fr_1fr_1fr]"
+            >
+                <div>
+                    <BrandLogo inverse />
+                    <p class="mt-5 max-w-md text-sm leading-6">
+                        {{
+                            textForLanguage(
+                                siteText.common.medicalNote,
+                                languageCode
+                            )
+                        }}
+                    </p>
+                    <p class="mt-4 text-xs text-[#9fb4aa]">
+                        © {{ new Date().getFullYear() }} FelisFold. Born from
+                        Lotus. For every Fold.
+                    </p>
                 </div>
-                <p class="mt-3 max-w-2xl leading-6">{{ medicalNote }}</p>
-            </div>
-            <div class="flex flex-wrap gap-x-5 gap-y-3 md:justify-end">
-                <NuxtLink
-                    :to="localizedPath('/sources')"
-                    class="text-ink hover:text-lilac font-medium"
-                    >{{ sourcesLabel }}</NuxtLink
+                <nav
+                    v-for="group in footerGroups"
+                    :key="group.title"
+                    :aria-label="group.title"
                 >
-                <NuxtLink
-                    :to="localizedPath('/about')"
-                    class="text-ink hover:text-lilac font-medium"
-                    >{{ aboutLabel }}</NuxtLink
-                >
-                <NuxtLink
-                    :to="localizedPath('/search')"
-                    class="text-ink hover:text-lilac font-medium"
-                    >{{
-                        textForLanguage(
-                            siteText.navigation.search,
-                            languageCode
-                        )
-                    }}</NuxtLink
-                >
+                    <h2 class="text-sm font-bold text-[#fffaf1]">
+                        {{ group.title }}
+                    </h2>
+                    <ul class="mt-4 space-y-3 text-sm">
+                        <li v-for="link in group.links" :key="link[1]">
+                            <NuxtLink
+                                :to="localizedPath(link[1])"
+                                class="hover:text-[#ef9c79]"
+                                >{{ link[0] }}</NuxtLink
+                            >
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </footer>

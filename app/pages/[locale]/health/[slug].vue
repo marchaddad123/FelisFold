@@ -73,16 +73,16 @@ const lotusJointCopy = computed(() =>
 )
 const lotusVomitingCopy = computed(() =>
     languageCode.value === "ar"
-        ? "لدى لوتس تاريخ طويل من القيء المتكرر، خاصة بعد الوجبات الأكبر وأحياناً بعد تنظيف نفسه. لذلك تتعامل FoldCare مع القيء كمشكلة منفصلة بدلاً من افتراض أنه ناتج عن جين Fold."
+        ? "لدى لوتس تاريخ طويل من القيء المتكرر، خاصة بعد الوجبات الأكبر وأحياناً بعد تنظيف نفسه. لذلك تتعامل FelisFold مع القيء كمشكلة منفصلة بدلاً من افتراض أنه ناتج عن جين Fold."
         : languageCode.value === "fr"
-          ? "Lotus a une longue histoire de vomissements répétés, surtout après de plus grosses portions et parfois après le toilettage. FoldCare traite donc les vomissements comme un problème séparé plutôt que de les attribuer au gène Fold."
+          ? "Lotus a une longue histoire de vomissements répétés, surtout après de plus grosses portions et parfois après le toilettage. FelisFold traite donc les vomissements comme un problème séparé plutôt que de les attribuer au gène Fold."
           : languageCode.value === "zh"
-            ? "Lotus 长期有反复呕吐，尤其在吃得较多后，有时也在梳理毛发后发生。因此 FoldCare 把呕吐当作独立问题，而不是假设它来自折耳基因。"
-            : "Lotus has a long history of repeated vomiting, especially after larger portions and sometimes after grooming. That history is why FoldCare treats vomiting as its own problem instead of assuming it comes from the Fold gene."
+            ? "Lotus 长期有反复呕吐，尤其在吃得较多后，有时也在梳理毛发后发生。因此 FelisFold 把呕吐当作独立问题，而不是假设它来自折耳基因。"
+            : "Lotus has a long history of repeated vomiting, especially after larger portions and sometimes after grooming. That history is why FelisFold treats vomiting as its own problem instead of assuming it comes from the Fold gene."
 )
 
 usePageSeo({
-    title: computed(() => `${title.value} — FoldCare`),
+    title: computed(() => `${title.value} — FelisFold`),
     description: summary,
     type: "article"
 })
@@ -97,8 +97,8 @@ useHead(() => ({
                 headline: title.value,
                 description: summary.value,
                 dateModified: topic.value!.reviewedOn,
-                author: { "@type": "Person", name: "FoldCare creator" },
-                publisher: { "@type": "Organization", name: "FoldCare" }
+                author: { "@type": "Person", name: "FelisFold creator" },
+                publisher: { "@type": "Organization", name: "FelisFold" }
             })
         }
     ]

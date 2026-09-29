@@ -17,8 +17,8 @@ const isSwitchingToLight = computed(
             class="theme-wipe absolute inset-0"
             :class="
                 isSwitchingToLight
-                    ? 'bg-[#f6f0e8]'
-                    : 'theme-wipe-dark bg-[#151318]'
+                    ? 'bg-[#f7efe3]'
+                    : 'theme-wipe-dark bg-[#0d2520]'
             "
             @animationend="completeThemeTransition"
         />

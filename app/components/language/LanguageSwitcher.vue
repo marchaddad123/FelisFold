@@ -5,16 +5,22 @@ import { storageKeys } from "~/utils/storageKeys"
 
 const { languageCode } = useCurrentLanguage()
 const { samePageInLanguage } = useLocalizedPath()
+const router = useRouter()
+const languageCookie = useCookie<LanguageCode>(storageKeys.language, {
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 365
+})
 
-function changeLanguage(event: Event) {
+async function changeLanguage(event: Event) {
     const selectElement = event.target as HTMLSelectElement
     const nextLanguage = selectElement.value as LanguageCode
 
     if (import.meta.client) {
         window.localStorage.setItem(storageKeys.language, nextLanguage)
     }
+    languageCookie.value = nextLanguage
 
-    navigateTo(samePageInLanguage(nextLanguage))
+    await router.push(samePageInLanguage(nextLanguage))
 }
 </script>
 

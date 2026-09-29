@@ -1,6 +1,6 @@
-# FoldCare V1 — Lotus Edition
+# FelisFold V1 — Lotus Edition
 
-FoldCare is a mobile-first Nuxt 4 website about Scottish Fold health.
+FelisFold is a mobile-first Nuxt 4 website about Scottish Fold health.
 
 The site starts with a real cat named Lotus and then moves from his owner's observations into general veterinary information.
 
@@ -176,7 +176,7 @@ Do not preload every image. Preload only the main above-the-fold image that is l
 
 ## Important medical rule
 
-FoldCare is educational.
+FelisFold is educational.
 
 It must clearly separate:
 

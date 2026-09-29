@@ -1,5 +1,5 @@
 export const storageKeys = {
-    language: "foldcare-language",
-    theme: "foldcare-theme",
-    trackerEntries: "foldcare-tracker-entries"
+    language: "felisfold-language",
+    theme: "felisfold-theme",
+    trackerEntries: "felisfold-tracker-entries"
 } as const

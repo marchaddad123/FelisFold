@@ -1,90 +1,47 @@
 <script setup lang="ts">
-const { languageCode } = useCurrentLanguage()
 const { entries, removeEntry } = useHealthTracker()
-
-const labels = computed(() => {
-    if (languageCode.value === "ar")
-        return {
-            emptyTitle: "لا توجد سجلات بعد",
-            emptyCopy: "أضف أول وجبة أو حالة قيء أو وزن أو ملاحظة حركة.",
-            remove: "حذف",
-            mobility: "الحركة",
-            hair: "تم تسجيل وجود شعر.",
-            blood: "تم تسجيل وجود دم — تواصل مع طبيب بيطري."
-        }
-    if (languageCode.value === "fr")
-        return {
-            emptyTitle: "Aucune entrée pour le moment",
-            emptyCopy:
-                "Ajoutez le premier repas, vomissement, poids ou note de mobilité.",
-            remove: "Supprimer",
-            mobility: "Mobilité",
-            hair: "Des poils ont été notés.",
-            blood: "Du sang a été noté — contactez un vétérinaire."
-        }
-    if (languageCode.value === "zh")
-        return {
-            emptyTitle: "还没有记录",
-            emptyCopy: "先添加一条进餐、呕吐、体重或活动记录。",
-            remove: "删除",
-            mobility: "活动",
-            hair: "记录到毛发。",
-            blood: "记录到血液——请联系兽医。"
-        }
-    return {
-        emptyTitle: "No entries yet",
-        emptyCopy:
-            "Add the first meal, vomiting event, weight or mobility note above.",
-        remove: "Remove",
-        mobility: "Mobility",
-        hair: "Hair was present.",
-        blood: "Blood was recorded — contact a veterinarian."
-    }
-})
-
-function entryTypeLabel(entryType: string): string {
-    const labelsByLanguage: Record<string, Record<string, string>> = {
-        en: {
-            meal: "Meal",
-            vomit: "Vomiting",
-            mobility: "Mobility",
-            medicine: "Medicine",
-            weight: "Weight",
-            note: "Note"
-        },
-        ar: {
-            meal: "وجبة",
-            vomit: "قيء",
-            mobility: "حركة",
-            medicine: "دواء",
-            weight: "وزن",
-            note: "ملاحظة"
-        },
-        fr: {
-            meal: "Repas",
-            vomit: "Vomissement",
-            mobility: "Mobilité",
-            medicine: "Médicament",
-            weight: "Poids",
-            note: "Note"
-        },
-        zh: {
-            meal: "进餐",
-            vomit: "呕吐",
-            mobility: "活动",
-            medicine: "用药",
-            weight: "体重",
-            note: "备注"
-        }
-    }
-    return labelsByLanguage[languageCode.value]?.[entryType] ?? entryType
+const typeLabels: Record<string, string> = {
+    meal: "Meal",
+    water: "Water",
+    vomit: "Vomiting",
+    litter: "Litter / stool",
+    appetite: "Appetite",
+    mood: "Mood",
+    pain: "Pain signs",
+    mobility: "Mobility",
+    grooming: "Grooming",
+    medicine: "Medication",
+    weight: "Weight",
+    note: "Note"
 }
-
+const typeIcons: Record<string, string> = {
+    meal: "◉",
+    water: "◌",
+    vomit: "↝",
+    litter: "▤",
+    appetite: "⌁",
+    mood: "☺",
+    pain: "♡",
+    mobility: "↗",
+    grooming: "✦",
+    medicine: "+",
+    weight: "⚖",
+    note: "✎"
+}
 function formatDate(dateTime: string): string {
     return new Intl.DateTimeFormat(undefined, {
         dateStyle: "medium",
         timeStyle: "short"
     }).format(new Date(dateTime))
+}
+function scoreText(entry: (typeof entries.value)[number]): string | null {
+    const score =
+        entry.appetiteScore ??
+        entry.moodScore ??
+        entry.painScore ??
+        entry.mobilityScore ??
+        entry.groomingScore
+    return typeof score === "number" ? `${score}/5` : null
 }
 </script>
 
@@ -92,60 +49,90 @@ function formatDate(dateTime: string): string {
     <section>
         <div
             v-if="entries.length === 0"
-            class="border-border bg-paper/60 rounded-[2rem] border border-dashed p-8 text-center"
+            class="border-border bg-paper border border-dashed p-8 text-center"
         >
             <FoldCatMascot size="sm" />
-            <h2 class="text-ink mt-3 text-xl font-semibold">
-                {{ labels.emptyTitle }}
+            <h2 class="font-editorial text-ink mt-3 text-2xl">
+                No entries yet.
             </h2>
-            <p class="text-muted mt-2">{{ labels.emptyCopy }}</p>
+            <p class="text-muted mt-2">
+                Add a meal, movement score or note to start seeing useful
+                patterns.
+            </p>
         </div>
-        <div v-else class="space-y-3">
+        <div v-else class="divide-border border-border divide-y border-y">
             <article
-                v-for="entry in entries.slice(0, 25)"
+                v-for="entry in entries.slice(0, 30)"
                 :key="entry.id"
-                class="border-border bg-paper rounded-[1.6rem] border p-5"
+                class="grid gap-3 py-5 sm:grid-cols-[auto_1fr_auto] sm:items-start"
             >
-                <div class="flex items-start justify-between gap-4">
-                    <div>
-                        <p
-                            class="text-lilac text-xs font-semibold tracking-[0.16em] uppercase"
+                <span
+                    class="bg-peach-soft text-peach grid size-10 place-items-center rounded-full"
+                    aria-hidden="true"
+                    >{{ typeIcons[entry.type] }}</span
+                >
+                <div>
+                    <div class="flex flex-wrap items-baseline gap-x-3">
+                        <h3 class="font-editorial text-ink text-xl">
+                            {{ typeLabels[entry.type] }}
+                        </h3>
+                        <time
+                            class="text-muted text-xs"
+                            :datetime="entry.dateTime"
+                            >{{ formatDate(entry.dateTime) }}</time
                         >
-                            {{ entryTypeLabel(entry.type) }}
-                        </p>
-                        <p class="text-muted mt-1 text-sm">
-                            {{ formatDate(entry.dateTime) }}
-                        </p>
                     </div>
-                    <button
-                        type="button"
-                        class="text-muted hover:bg-danger-soft hover:text-danger rounded-full px-3 py-1 text-xs font-medium"
-                        @click="removeEntry(entry.id)"
+                    <p
+                        v-if="entry.foodName"
+                        class="text-ink mt-2 font-semibold"
                     >
-                        {{ labels.remove }}
-                    </button>
+                        {{ entry.foodName }}
+                    </p>
+                    <p v-if="entry.amount !== undefined" class="text-ink mt-1">
+                        {{ entry.amount }} {{ entry.unit }}
+                    </p>
+                    <p
+                        v-if="scoreText(entry)"
+                        class="text-sky mt-2 text-sm font-bold"
+                    >
+                        Score {{ scoreText(entry) }}
+                    </p>
+                    <p
+                        v-if="entry.stoolQuality"
+                        class="text-muted mt-2 text-sm"
+                    >
+                        Stool: {{ entry.stoolQuality }}
+                    </p>
+                    <p
+                        v-if="entry.medicationName"
+                        class="text-muted mt-2 text-sm"
+                    >
+                        {{ entry.medicationName }} —
+                        {{ entry.medicationTaken ? "taken" : "not taken" }}
+                    </p>
+                    <p
+                        v-if="entry.vomitHadHair"
+                        class="text-muted mt-2 text-sm"
+                    >
+                        Hair was present.
+                    </p>
+                    <p
+                        v-if="entry.vomitHadBlood"
+                        class="text-danger mt-2 text-sm font-bold"
+                    >
+                        Blood recorded — contact a veterinarian.
+                    </p>
+                    <p v-if="entry.note" class="text-muted mt-2 leading-7">
+                        {{ entry.note }}
+                    </p>
                 </div>
-                <p
-                    v-if="entry.amount !== undefined"
-                    class="text-ink mt-3 font-semibold"
+                <button
+                    type="button"
+                    class="text-muted hover:text-danger min-h-10 px-3 text-xs font-bold"
+                    @click="removeEntry(entry.id)"
                 >
-                    {{ entry.amount }} {{ entry.unit }}
-                </p>
-                <p v-if="entry.mobilityScore" class="text-ink mt-3 text-sm">
-                    {{ labels.mobility }}: {{ entry.mobilityScore }}/5
-                </p>
-                <p v-if="entry.vomitHadHair" class="text-muted mt-2 text-sm">
-                    {{ labels.hair }}
-                </p>
-                <p
-                    v-if="entry.vomitHadBlood"
-                    class="text-danger mt-2 text-sm font-medium"
-                >
-                    {{ labels.blood }}
-                </p>
-                <p v-if="entry.note" class="text-muted mt-3 leading-7">
-                    {{ entry.note }}
-                </p>
+                    Remove
+                </button>
             </article>
         </div>
     </section>

@@ -8,6 +8,8 @@ export type HealthSource = {
     name: string
     organization: string
     url: string
+    type?: string
+    year?: number | string
 }
 
 export type HealthSection = {
@@ -27,10 +29,43 @@ export type HealthTopic = {
     sections: HealthSection[]
     sources: HealthSource[]
     reviewedOn: string
+    image?: {
+        src: string
+        alt: string
+        width: number
+        height: number
+        position?: string
+    }
+}
+
+export type CatProfile = {
+    id: string
+    name: string
+    photo: string
+    width: number
+    height: number
+    caption: string
+    attribution: string
+    source: "owner-supplied" | "licensed-public" | "demonstration"
+    sourceUrl?: string
+    license?: string
+    licenseUrl?: string
+    isLotus: boolean
 }
 
 export type TrackerEntryType =
-    "meal" | "vomit" | "mobility" | "medicine" | "weight" | "note"
+    | "meal"
+    | "water"
+    | "vomit"
+    | "litter"
+    | "appetite"
+    | "mood"
+    | "pain"
+    | "mobility"
+    | "grooming"
+    | "medicine"
+    | "weight"
+    | "note"
 
 export type TrackerEntry = {
     id: string
@@ -39,7 +74,15 @@ export type TrackerEntry = {
     note: string
     amount?: number
     unit?: string
+    foodName?: string
     vomitHadHair?: boolean
     vomitHadBlood?: boolean
+    stoolQuality?: "hard" | "normal" | "soft" | "diarrhea"
+    appetiteScore?: number
+    moodScore?: number
+    painScore?: number
     mobilityScore?: number
+    groomingScore?: number
+    medicationName?: string
+    medicationTaken?: boolean
 }

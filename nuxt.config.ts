@@ -2,7 +2,7 @@ import tailwindcss from "@tailwindcss/vite"
 
 const themeBootScript = `(() => {
     try {
-        const savedTheme = localStorage.getItem("foldcare-theme")
+        const savedTheme = localStorage.getItem("felisfold-theme") ?? localStorage.getItem("foldcare-theme")
         const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
         const theme = savedTheme === "dark" || savedTheme === "light" ? savedTheme : systemTheme
         document.documentElement.classList.toggle("dark", theme === "dark")
@@ -13,14 +13,14 @@ const themeBootScript = `(() => {
 
 export default defineNuxtConfig({
     compatibilityDate: "2026-09-01",
-    devtools: { enabled: true },
+    buildDir: ".nuxt",
+    devtools: { enabled: false },
     modules: ["@nuxt/eslint", "@nuxt/image"],
     components: [{ path: "~/components", pathPrefix: false }],
     css: ["~/assets/css/main.css"],
     runtimeConfig: {
         public: {
-            siteUrl:
-                process.env.NUXT_PUBLIC_SITE_URL || "https://foldcare.example"
+            siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://felisfold.com"
         }
     },
     image: {
@@ -57,7 +57,6 @@ export default defineNuxtConfig({
         }
     },
     typescript: {
-        strict: true,
-        typeCheck: true
+        strict: true
     }
 })

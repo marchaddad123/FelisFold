@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { isLanguageCode } from "~/utils/languages"
+import { feedingSchedule, nutritionTopics } from "~/data/nutritionTopics"
 
 definePageMeta({ validate: (route) => isLanguageCode(route.params.locale) })
 const { languageCode } = useCurrentLanguage()
@@ -17,8 +18,6 @@ type NutritionPageText = {
     warningTitle: string
     warningCopy: string
 }
-const cardTones = ["sage", "lilac", "sky", "peach"] as const
-
 const pageText = computed<NutritionPageText>(() => {
     if (languageCode.value === "ar") {
         return {
@@ -156,74 +155,312 @@ const pageText = computed<NutritionPageText>(() => {
 })
 
 usePageSeo({
-    title: computed(() => `${pageText.value.title} — FoldCare`),
+    title: computed(() => `${pageText.value.title} — FelisFold`),
     description: computed(() => pageText.value.description)
 })
 </script>
 
 <template>
-    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-5 sm:py-16 lg:px-8 lg:py-20">
-        <AppSectionHeading
-            :eyebrow="pageText.eyebrow"
-            :title="pageText.title"
-            :copy="pageText.description"
-        />
-
-        <div class="mt-10 grid gap-5 md:grid-cols-2">
-            <AppCalloutCard
-                v-for="(card, index) in pageText.cards"
-                :key="card[0]"
-                :title="card[0]"
-                :copy="card[1]"
-                :tone="cardTones[index] ?? 'sage'"
-            />
-        </div>
-
-        <section
-            class="bg-paper mt-12 grid gap-7 rounded-[2.4rem] p-5 sm:p-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center"
-        >
-            <NuxtImg
-                src="/images/lotus/lotus-feeding.jpg"
-                alt="Lotus eating from his food bowl"
-                width="1152"
-                height="1536"
-                sizes="100vw lg:45vw xl:520px"
-                format="webp"
-                :quality="86"
-                loading="lazy"
-                decoding="async"
-                placeholder
-                class="aspect-[4/3] w-full rounded-[1.8rem] object-cover object-[center_58%]"
-            />
-            <div>
-                <p
-                    class="text-lilac text-sm font-semibold tracking-[0.18em] uppercase"
+    <div>
+        <section class="paper-texture">
+            <div
+                class="mx-auto grid max-w-[90rem] lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch"
+            >
+                <div
+                    class="order-2 px-4 py-10 sm:px-8 sm:py-14 lg:order-1 lg:flex lg:flex-col lg:justify-center lg:px-14"
                 >
-                    {{ pageText.lotusEyebrow }}
-                </p>
-                <h2 class="text-ink mt-3 text-3xl font-semibold tracking-tight">
-                    {{ pageText.lotusTitle }}
-                </h2>
-                <p class="text-muted mt-4 leading-8">
-                    {{ pageText.lotusCopy }}
-                </p>
-                <NuxtLink
-                    :to="localizedPath('/tracker')"
-                    class="bg-ink text-surface-inverse mt-6 inline-flex min-h-12 items-center rounded-full px-5 font-medium"
-                    >{{ pageText.tracker }}</NuxtLink
+                    <p
+                        class="text-peach text-xs font-bold tracking-[0.2em] uppercase"
+                    >
+                        {{ pageText.eyebrow }}
+                    </p>
+                    <h1
+                        class="font-editorial text-ink mt-3 text-5xl leading-[0.94] tracking-[-0.05em] sm:text-6xl lg:text-7xl"
+                    >
+                        Nutrition, sensitive stomachs & everyday feeding.
+                    </h1>
+                    <p class="text-muted mt-5 max-w-xl text-lg leading-8">
+                        {{ pageText.description }} Practical guidance for
+                        happier eating, fewer tummy upsets and a brighter life.
+                    </p>
+                    <div class="mt-7 flex flex-wrap gap-3">
+                        <a
+                            href="#nutrition-topics"
+                            class="bg-peach inline-flex min-h-12 items-center rounded-full px-6 font-bold text-white"
+                            >Explore nutrition topics
+                            <span class="ms-3">→</span></a
+                        ><NuxtLink
+                            :to="localizedPath('/lotus')"
+                            class="editorial-link text-ink inline-flex min-h-12 items-center px-2 font-semibold"
+                            >Lotus's feeding journey →</NuxtLink
+                        >
+                    </div>
+                </div>
+                <div
+                    class="relative order-1 min-h-[22rem] lg:order-2 lg:min-h-[38rem]"
                 >
+                    <NuxtImg
+                        src="/images/lotus/lotus-glasses.jpg"
+                        alt="Lotus resting after a meal"
+                        width="1536"
+                        height="1333"
+                        sizes="100vw lg:58vw"
+                        format="webp"
+                        :quality="87"
+                        preload
+                        fetchpriority="high"
+                        class="absolute inset-0 size-full object-cover object-[center_45%]"
+                    /><HandwrittenNote
+                        text="Good nutrition changes lives."
+                        tone="paper"
+                        class="absolute start-5 top-7 bg-[#fffaf1]/85 p-3 shadow-md"
+                    /><HandwrittenNote
+                        text="Same curious eyes. Same sensitive tummy."
+                        tone="light"
+                        class="absolute end-5 bottom-6 hidden drop-shadow-lg sm:block"
+                    />
+                </div>
+            </div>
+            <WavySectionDivider tone="sky" />
+        </section>
+
+        <section class="bg-sky-soft paper-texture px-4 py-12 sm:px-6 sm:py-16">
+            <div
+                class="mx-auto grid max-w-[90rem] gap-8 lg:grid-cols-[0.85fr_0.8fr_0.65fr] lg:items-center"
+            >
+                <div>
+                    <p
+                        class="text-sky text-xs font-bold tracking-[0.2em] uppercase"
+                    >
+                        {{ pageText.lotusEyebrow }}
+                    </p>
+                    <h2 class="font-editorial text-ink mt-2 text-4xl">
+                        {{ pageText.lotusTitle }}
+                    </h2>
+                    <p class="text-muted mt-4 leading-7">
+                        {{ pageText.lotusCopy }}
+                    </p>
+                    <NuxtLink
+                        :to="localizedPath('/tracker')"
+                        class="bg-paper text-ink mt-6 inline-flex min-h-11 items-center rounded-full px-5 font-bold"
+                        >{{ pageText.tracker }} →</NuxtLink
+                    >
+                </div>
+                <NuxtImg
+                    src="/images/lotus/lotus-feeding.jpg"
+                    alt="Lotus eating a measured meal"
+                    width="1152"
+                    height="1536"
+                    sizes="100vw lg:34vw"
+                    format="webp"
+                    :quality="84"
+                    loading="lazy"
+                    decoding="async"
+                    placeholder
+                    class="aspect-[4/3] w-full rounded-[48%_48%_8%_8%] object-cover object-[center_58%]"
+                />
+                <div class="bg-[#fffaf1] p-5 shadow-xl">
+                    <p class="font-handwritten text-ink text-lg">
+                        Real progress can look like:
+                    </p>
+                    <ul class="text-muted mt-4 space-y-3 text-sm">
+                        <li>✓ Fewer vomiting episodes</li>
+                        <li>✓ Calmer, measured eating</li>
+                        <li>✓ Better hydration</li>
+                        <li>✓ More consistent stool</li>
+                        <li>✓ A brighter, playful Lotus</li>
+                    </ul>
+                </div>
             </div>
         </section>
 
         <section
-            class="border-danger/20 bg-danger-soft mt-10 rounded-[2rem] border p-6 sm:p-8"
+            id="nutrition-topics"
+            class="bg-paper paper-texture px-4 py-14 sm:px-6 sm:py-20"
         >
-            <h2 class="text-ink text-2xl font-semibold">
-                {{ pageText.warningTitle }}
-            </h2>
-            <p class="text-muted mt-4 leading-8">{{ pageText.warningCopy }}</p>
+            <div class="mx-auto max-w-[90rem]">
+                <p
+                    class="text-peach text-xs font-bold tracking-[0.2em] uppercase"
+                >
+                    Key nutrition topics
+                </p>
+                <h2 class="font-editorial text-ink mt-2 text-4xl sm:text-5xl">
+                    Simple steps. Real impact.
+                </h2>
+                <p class="text-muted mt-3 max-w-2xl leading-7">
+                    Evidence-led guidance for Scottish Folds with sensitive
+                    stomachs.
+                </p>
+                <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <article
+                        v-for="topic in nutritionTopics"
+                        :key="topic.id"
+                        class="border-border group bg-cream overflow-hidden border"
+                    >
+                        <NuxtImg
+                            :src="topic.image.src"
+                            :alt="topic.image.alt"
+                            :width="topic.image.width"
+                            :height="topic.image.height"
+                            sizes="100vw sm:50vw lg:360px"
+                            format="webp"
+                            :quality="82"
+                            loading="lazy"
+                            decoding="async"
+                            placeholder
+                            class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                        />
+                        <div class="p-5">
+                            <span class="font-editorial text-sky text-2xl">{{
+                                topic.icon
+                            }}</span>
+                            <h3
+                                class="font-editorial text-ink mt-2 text-2xl leading-tight"
+                            >
+                                {{ topic.title }}
+                            </h3>
+                            <p class="text-muted mt-2 text-sm leading-6">
+                                {{ topic.summary }}
+                            </p>
+                            <p
+                                class="border-peach/40 text-ink mt-4 border-s-2 ps-3 text-xs leading-5"
+                            >
+                                {{ topic.note }}
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </div>
         </section>
 
-        <MedicalInformationNotice class="mt-8" />
+        <section class="px-4 py-14 sm:px-6">
+            <div class="mx-auto max-w-[90rem]">
+                <div
+                    class="grid gap-6 lg:grid-cols-[0.7fr_1.3fr] lg:items-center"
+                >
+                    <div>
+                        <p
+                            class="text-peach text-xs font-bold tracking-[0.2em] uppercase"
+                        >
+                            Nutrition in practice
+                        </p>
+                        <h2 class="font-editorial text-ink mt-2 text-4xl">
+                            A sample daily feeding rhythm.
+                        </h2>
+                        <p class="text-muted mt-4 leading-7">
+                            Small, measured meals can support steadier energy
+                            and make patterns easier to track. The right amount
+                            is individual.
+                        </p>
+                    </div>
+                    <ol class="grid gap-3 sm:grid-cols-5">
+                        <li
+                            v-for="meal in feedingSchedule"
+                            :key="meal.time"
+                            class="border-border bg-paper border p-4"
+                        >
+                            <p class="text-sky text-sm font-bold">
+                                {{ meal.time }}
+                            </p>
+                            <h3 class="font-editorial text-ink mt-2 text-lg">
+                                {{ meal.label }}
+                            </h3>
+                            <p class="text-muted mt-1 text-xs leading-5">
+                                {{ meal.detail }}
+                            </p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-peach-soft paper-texture px-4 py-12 sm:px-6">
+            <div
+                class="mx-auto grid max-w-[90rem] gap-7 lg:grid-cols-[0.7fr_0.9fr_0.8fr] lg:items-center"
+            >
+                <div>
+                    <p
+                        class="text-danger text-xs font-bold tracking-[0.2em] uppercase"
+                    >
+                        Homemade food?
+                    </p>
+                    <h2 class="font-editorial text-ink mt-2 text-4xl">
+                        Start safely.
+                    </h2>
+                    <p class="text-muted mt-4 leading-7">
+                        {{ pageText.warningCopy }}
+                    </p>
+                </div>
+                <NuxtImg
+                    src="/images/lotus/lotus-feeding.jpg"
+                    alt="Lotus eating from his bowl"
+                    width="1152"
+                    height="1536"
+                    sizes="100vw lg:32vw"
+                    format="webp"
+                    :quality="82"
+                    loading="lazy"
+                    decoding="async"
+                    placeholder
+                    class="aspect-[16/10] w-full object-cover object-[center_58%]"
+                />
+                <div class="border-danger/30 bg-paper border p-5">
+                    <h3 class="font-editorial text-ink text-2xl">
+                        {{ pageText.warningTitle }}
+                    </h3>
+                    <p class="text-muted mt-3 text-sm leading-6">
+                        Long-term homemade diets need veterinary nutrition
+                        formulation. Meat alone is not complete for cats.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section
+            class="mx-auto grid max-w-[90rem] gap-8 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[0.7fr_1fr_0.7fr] lg:items-center"
+        >
+            <div>
+                <p
+                    class="text-peach text-xs font-bold tracking-[0.2em] uppercase"
+                >
+                    Vomiting journal
+                </p>
+                <h2 class="font-editorial text-ink mt-2 text-4xl">
+                    Bring useful detail to the vet.
+                </h2>
+                <p class="text-muted mt-4 leading-7">
+                    Record what Lotus ate, how much, when vomiting happened,
+                    whether hair was present, appetite, stool and energy.
+                </p>
+                <NuxtLink
+                    :to="localizedPath('/tracker')"
+                    class="bg-peach mt-6 inline-flex min-h-11 items-center rounded-full px-5 font-bold text-white"
+                    >Open the tracker →</NuxtLink
+                >
+            </div>
+            <div class="bg-paper photo-paper -rotate-1 p-6">
+                <p class="font-handwritten text-ink text-xl">Today…</p>
+                <ul class="text-muted mt-4 space-y-3">
+                    <li>✓ What he ate</li>
+                    <li>✓ When he ate</li>
+                    <li>✓ Vomiting or hairball?</li>
+                    <li>✓ Stool, appetite and mood</li>
+                </ul>
+            </div>
+            <NuxtImg
+                src="/images/lotus/lotus-with-creator.jpg"
+                alt="Lotus with his owner"
+                width="864"
+                height="1536"
+                sizes="100vw lg:28vw"
+                format="webp"
+                :quality="82"
+                loading="lazy"
+                decoding="async"
+                placeholder
+                class="aspect-square w-full rounded-[48%_48%_8%_8%] object-cover object-[center_30%]"
+            />
+        </section>
+        <TrustStrip />
     </div>
 </template>

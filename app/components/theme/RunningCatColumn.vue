@@ -13,7 +13,7 @@ const horizontalOffsets = [0, -7, 5, -3, 7, 0, -6, 4, -2, 6]
 </script>
 
 <template>
-    <div class="theme-cat-column" aria-hidden="true">
+    <div class="theme-cat-column" :data-cat-color="catColor" aria-hidden="true">
         <div
             v-for="catNumber in catCount"
             :key="catNumber"

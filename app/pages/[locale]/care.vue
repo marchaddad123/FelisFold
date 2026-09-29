@@ -160,13 +160,15 @@ const pageText = computed<CarePageText>(() => {
 })
 
 usePageSeo({
-    title: computed(() => `${pageText.value.eyebrow} — FoldCare`),
+    title: computed(() => `${pageText.value.eyebrow} — FelisFold`),
     description: computed(() => pageText.value.copy)
 })
 </script>
 
 <template>
-    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-5 sm:py-16 lg:px-8 lg:py-20">
+    <div
+        class="mx-auto max-w-[90rem] px-4 py-12 sm:px-5 sm:py-16 lg:px-8 lg:py-20"
+    >
         <div class="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
             <AppSectionHeading
                 :eyebrow="pageText.eyebrow"

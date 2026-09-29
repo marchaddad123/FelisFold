@@ -12,10 +12,13 @@ defineProps<{
             <li
                 v-for="item in items"
                 :key="item"
-                class="text-muted flex gap-3 leading-7"
+                class="text-muted grid grid-cols-[0.6rem_minmax(0,1fr)] items-start gap-3 leading-7"
             >
-                <span class="text-lilac mt-1" aria-hidden="true">●</span>
-                <span>{{ item }}</span>
+                <span
+                    class="bg-peach mt-[0.65rem] size-2 rounded-full"
+                    aria-hidden="true"
+                />
+                <span class="min-w-0">{{ item }}</span>
             </li>
         </ul>
     </article>

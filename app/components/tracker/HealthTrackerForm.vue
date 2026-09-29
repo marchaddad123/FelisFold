@@ -1,191 +1,72 @@
 <script setup lang="ts">
 import type { TrackerEntryType } from "~/types/foldcare"
 
-const { languageCode } = useCurrentLanguage()
 const { addEntry } = useHealthTracker()
-
-const entryType = ref<TrackerEntryType>("meal")
-function createLocalDateTimeValue(): string {
+const emit = defineEmits<{ saved: [] }>()
+function localDateTime(): string {
     const now = new Date()
-    const localTime = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
-    return localTime.toISOString().slice(0, 16)
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
+        .toISOString()
+        .slice(0, 16)
 }
 
-const dateTime = ref(createLocalDateTimeValue())
+const entryType = ref<TrackerEntryType>("meal")
+const dateTime = ref(localDateTime())
 const note = ref("")
-const amount = ref<number | undefined>()
+const amount = ref<number>()
 const unit = ref("g")
+const foodName = ref("")
 const vomitHadHair = ref(false)
 const vomitHadBlood = ref(false)
-const mobilityScore = ref(3)
+const stoolQuality = ref<"hard" | "normal" | "soft" | "diarrhea">("normal")
+const score = ref(3)
+const medicationName = ref("")
+const medicationTaken = ref(true)
 const savedMessageIsVisible = ref(false)
 
-const labels = computed(() => ({
-    type:
-        languageCode.value === "ar"
-            ? "نوع السجل"
-            : languageCode.value === "fr"
-              ? "Type d'entrée"
-              : languageCode.value === "zh"
-                ? "记录类型"
-                : "Entry type",
-    date:
-        languageCode.value === "ar"
-            ? "الوقت"
-            : languageCode.value === "fr"
-              ? "Heure"
-              : languageCode.value === "zh"
-                ? "时间"
-                : "Date and time",
-    amount:
-        languageCode.value === "ar"
-            ? "الكمية"
-            : languageCode.value === "fr"
-              ? "Quantité"
-              : languageCode.value === "zh"
-                ? "数量"
-                : "Amount",
-    unit:
-        languageCode.value === "ar"
-            ? "الوحدة"
-            : languageCode.value === "fr"
-              ? "Unité"
-              : languageCode.value === "zh"
-                ? "单位"
-                : "Unit",
-    note:
-        languageCode.value === "ar"
-            ? "ملاحظة"
-            : languageCode.value === "fr"
-              ? "Note"
-              : languageCode.value === "zh"
-                ? "备注"
-                : "Note",
-    notePlaceholder:
-        languageCode.value === "ar"
-            ? "ماذا حدث؟ ماذا لاحظت؟"
-            : languageCode.value === "fr"
-              ? "Que s'est-il passé ? Qu'avez-vous remarqué ?"
-              : languageCode.value === "zh"
-                ? "发生了什么？你注意到了什么？"
-                : "What happened? What did you notice?",
-    hair:
-        languageCode.value === "ar"
-            ? "وجود شعر"
-            : languageCode.value === "fr"
-              ? "Poils présents"
-              : languageCode.value === "zh"
-                ? "有毛发"
-                : "Hair present",
-    blood:
-        languageCode.value === "ar"
-            ? "وجود دم"
-            : languageCode.value === "fr"
-              ? "Sang présent"
-              : languageCode.value === "zh"
-                ? "有血"
-                : "Blood present",
-    mobility:
-        languageCode.value === "ar"
-            ? "درجة الحركة"
-            : languageCode.value === "fr"
-              ? "Score de mobilité"
-              : languageCode.value === "zh"
-                ? "活动评分"
-                : "Mobility score",
-    save:
-        languageCode.value === "ar"
-            ? "احفظ"
-            : languageCode.value === "fr"
-              ? "Enregistrer"
-              : languageCode.value === "zh"
-                ? "保存"
-                : "Save entry",
-    saved:
-        languageCode.value === "ar"
-            ? "تم الحفظ محلياً ✓"
-            : languageCode.value === "fr"
-              ? "Enregistré localement ✓"
-              : languageCode.value === "zh"
-                ? "已保存到本机 ✓"
-                : "Saved locally ✓"
-}))
-
-const typeOptions = computed(() => [
-    {
-        value: "meal",
-        label:
-            languageCode.value === "ar"
-                ? "وجبة"
-                : languageCode.value === "fr"
-                  ? "Repas"
-                  : languageCode.value === "zh"
-                    ? "进餐"
-                    : "Meal"
-    },
-    {
-        value: "vomit",
-        label:
-            languageCode.value === "ar"
-                ? "قيء"
-                : languageCode.value === "fr"
-                  ? "Vomissement"
-                  : languageCode.value === "zh"
-                    ? "呕吐"
-                    : "Vomiting"
-    },
-    {
-        value: "mobility",
-        label:
-            languageCode.value === "ar"
-                ? "حركة"
-                : languageCode.value === "fr"
-                  ? "Mobilité"
-                  : languageCode.value === "zh"
-                    ? "活动"
-                    : "Mobility"
-    },
-    {
-        value: "medicine",
-        label:
-            languageCode.value === "ar"
-                ? "دواء"
-                : languageCode.value === "fr"
-                  ? "Médicament"
-                  : languageCode.value === "zh"
-                    ? "用药"
-                    : "Medicine"
-    },
-    {
-        value: "weight",
-        label:
-            languageCode.value === "ar"
-                ? "وزن"
-                : languageCode.value === "fr"
-                  ? "Poids"
-                  : languageCode.value === "zh"
-                    ? "体重"
-                    : "Weight"
-    },
-    {
-        value: "note",
-        label:
-            languageCode.value === "ar"
-                ? "ملاحظة"
-                : languageCode.value === "fr"
-                  ? "Note"
-                  : languageCode.value === "zh"
-                    ? "备注"
-                    : "Note"
-    }
-])
+const types: Array<{ value: TrackerEntryType; label: string; icon: string }> = [
+    { value: "meal", label: "Meal / food", icon: "◉" },
+    { value: "water", label: "Water", icon: "◌" },
+    { value: "vomit", label: "Vomiting / hairball", icon: "↝" },
+    { value: "litter", label: "Litter / stool", icon: "▤" },
+    { value: "appetite", label: "Appetite", icon: "⌁" },
+    { value: "mood", label: "Mood", icon: "☺" },
+    { value: "pain", label: "Pain signs", icon: "♡" },
+    { value: "mobility", label: "Mobility", icon: "↗" },
+    { value: "grooming", label: "Grooming", icon: "✦" },
+    { value: "medicine", label: "Medication", icon: "+" },
+    { value: "weight", label: "Weight", icon: "⚖" },
+    { value: "note", label: "Note", icon: "✎" }
+]
+const scoreTypes: TrackerEntryType[] = [
+    "appetite",
+    "mood",
+    "pain",
+    "mobility",
+    "grooming"
+]
 
 watch(entryType, (nextType) => {
-    if (nextType === "weight") unit.value = "kg"
-    if (nextType === "meal") unit.value = "g"
+    amount.value = undefined
+    unit.value =
+        nextType === "weight" ? "kg" : nextType === "water" ? "ml" : "g"
+    savedMessageIsVisible.value = false
 })
 
 function saveEntry() {
+    const scoreFields = {
+        ...(entryType.value === "appetite"
+            ? { appetiteScore: score.value }
+            : {}),
+        ...(entryType.value === "mood" ? { moodScore: score.value } : {}),
+        ...(entryType.value === "pain" ? { painScore: score.value } : {}),
+        ...(entryType.value === "mobility"
+            ? { mobilityScore: score.value }
+            : {}),
+        ...(entryType.value === "grooming"
+            ? { groomingScore: score.value }
+            : {})
+    }
     addEntry({
         type: entryType.value,
         dateTime: new Date(dateTime.value).toISOString(),
@@ -193,144 +74,187 @@ function saveEntry() {
         ...(amount.value !== undefined
             ? { amount: amount.value, unit: unit.value }
             : {}),
+        ...(entryType.value === "meal" && foodName.value
+            ? { foodName: foodName.value.trim() }
+            : {}),
         ...(entryType.value === "vomit"
             ? {
                   vomitHadHair: vomitHadHair.value,
                   vomitHadBlood: vomitHadBlood.value
               }
             : {}),
-        ...(entryType.value === "mobility"
-            ? { mobilityScore: mobilityScore.value }
-            : {})
+        ...(entryType.value === "litter"
+            ? { stoolQuality: stoolQuality.value }
+            : {}),
+        ...(entryType.value === "medicine"
+            ? {
+                  medicationName: medicationName.value.trim(),
+                  medicationTaken: medicationTaken.value
+              }
+            : {}),
+        ...scoreFields
     })
-
     note.value = ""
     amount.value = undefined
     vomitHadHair.value = false
     vomitHadBlood.value = false
     savedMessageIsVisible.value = true
-    window.setTimeout(() => (savedMessageIsVisible.value = false), 1600)
+    emit("saved")
 }
 </script>
 
 <template>
     <form
-        class="border-border bg-paper rounded-[2rem] border p-5 sm:p-7"
+        class="border-border bg-paper paper-texture border p-5 sm:p-7"
         @submit.prevent="saveEntry"
     >
-        <div class="grid gap-4 sm:grid-cols-2">
-            <label class="text-ink grid gap-2 text-sm font-medium">
-                {{ labels.type }}
-                <select
-                    v-model="entryType"
-                    class="border-border bg-cream text-ink focus:border-lilac min-h-12 rounded-2xl border px-4 outline-none"
+        <fieldset>
+            <legend class="font-editorial text-ink text-2xl">
+                What are you recording?
+            </legend>
+            <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <label
+                    v-for="type in types"
+                    :key="type.value"
+                    class="border-border has-[:checked]:border-peach has-[:checked]:bg-peach-soft flex min-h-14 cursor-pointer items-center gap-2 border px-3 text-sm"
+                    ><input
+                        v-model="entryType"
+                        type="radio"
+                        name="entry-type"
+                        :value="type.value"
+                        class="sr-only"
+                    /><span class="text-peach" aria-hidden="true">{{
+                        type.icon
+                    }}</span
+                    ><span>{{ type.label }}</span></label
                 >
-                    <option
-                        v-for="option in typeOptions"
-                        :key="option.value"
-                        :value="option.value"
-                    >
-                        {{ option.label }}
-                    </option>
-                </select>
-            </label>
-            <label class="text-ink grid gap-2 text-sm font-medium">
-                {{ labels.date }}
-                <input
+            </div>
+        </fieldset>
+        <div class="mt-5 grid gap-4 sm:grid-cols-2">
+            <label class="text-ink grid gap-2 text-sm font-semibold"
+                >Date and time<input
                     v-model="dateTime"
                     type="datetime-local"
-                    class="border-border bg-cream text-ink focus:border-lilac min-h-12 rounded-2xl border px-4 outline-none"
                     required
-                />
-            </label>
+                    class="border-border bg-cream focus:border-peach min-h-12 border px-4 outline-none" /></label
+            ><label
+                v-if="entryType === 'meal'"
+                class="text-ink grid gap-2 text-sm font-semibold"
+                >Food name<input
+                    v-model="foodName"
+                    placeholder="Brand or recipe"
+                    class="border-border bg-cream focus:border-peach min-h-12 border px-4 outline-none"
+            /></label>
         </div>
-
         <div
-            v-if="
-                entryType === 'meal' ||
-                entryType === 'weight' ||
-                entryType === 'medicine'
-            "
+            v-if="['meal', 'water', 'weight'].includes(entryType)"
             class="mt-4 grid gap-4 sm:grid-cols-[1fr_0.45fr]"
         >
-            <label class="text-ink grid gap-2 text-sm font-medium">
-                {{ labels.amount }}
-                <input
+            <label class="text-ink grid gap-2 text-sm font-semibold"
+                >Amount<input
                     v-model.number="amount"
                     type="number"
                     min="0"
                     step="0.1"
-                    class="border-border bg-cream text-ink focus:border-lilac min-h-12 rounded-2xl border px-4 outline-none"
-                />
-            </label>
-            <label class="text-ink grid gap-2 text-sm font-medium">
-                {{ labels.unit }}
-                <input
+                    class="border-border bg-cream focus:border-peach min-h-12 border px-4 outline-none" /></label
+            ><label class="text-ink grid gap-2 text-sm font-semibold"
+                >Unit<input
                     v-model="unit"
-                    class="border-border bg-cream text-ink focus:border-lilac min-h-12 rounded-2xl border px-4 outline-none"
-                />
-            </label>
+                    class="border-border bg-cream focus:border-peach min-h-12 border px-4 outline-none"
+            /></label>
         </div>
-
-        <div
-            v-if="entryType === 'vomit'"
-            class="bg-peach-soft mt-4 flex flex-wrap gap-5 rounded-2xl p-4"
-        >
-            <label class="text-ink flex items-center gap-2 text-sm">
-                <input
-                    v-model="vomitHadHair"
-                    type="checkbox"
-                    class="accent-lilac size-4"
-                />
-                {{ labels.hair }}
-            </label>
-            <label class="text-ink flex items-center gap-2 text-sm">
-                <input
-                    v-model="vomitHadBlood"
-                    type="checkbox"
-                    class="accent-lilac size-4"
-                />
-                {{ labels.blood }}
-            </label>
-        </div>
-
+        <fieldset v-if="entryType === 'vomit'" class="bg-peach-soft mt-4 p-4">
+            <legend class="sr-only">Vomiting details</legend>
+            <div class="flex flex-wrap gap-5">
+                <label class="flex min-h-11 items-center gap-2"
+                    ><input
+                        v-model="vomitHadHair"
+                        type="checkbox"
+                        class="accent-peach size-5"
+                    />
+                    Hair was present</label
+                ><label class="flex min-h-11 items-center gap-2"
+                    ><input
+                        v-model="vomitHadBlood"
+                        type="checkbox"
+                        class="accent-peach size-5"
+                    />
+                    Blood was present</label
+                >
+            </div>
+            <p v-if="vomitHadBlood" class="text-danger mt-2 text-sm font-bold">
+                Blood in vomit needs prompt veterinary advice.
+            </p>
+        </fieldset>
         <label
-            v-if="entryType === 'mobility'"
-            class="text-ink mt-4 grid gap-2 text-sm font-medium"
+            v-if="entryType === 'litter'"
+            class="text-ink mt-4 grid gap-2 text-sm font-semibold"
+            >Stool quality<select
+                v-model="stoolQuality"
+                class="border-border bg-cream min-h-12 border px-4"
+            >
+                <option value="hard">Hard</option>
+                <option value="normal">Normal</option>
+                <option value="soft">Soft</option>
+                <option value="diarrhea">Diarrhea</option>
+            </select></label
         >
-            {{ labels.mobility }}: {{ mobilityScore }}/5
-            <input
-                v-model.number="mobilityScore"
+        <label
+            v-if="scoreTypes.includes(entryType)"
+            class="text-ink mt-4 grid gap-3 text-sm font-semibold"
+            >Score: {{ score }}/5
+            <span class="text-muted font-normal">{{
+                entryType === "pain"
+                    ? "1 = no signs, 5 = severe signs"
+                    : "1 = poor, 5 = excellent"
+            }}</span
+            ><input
+                v-model.number="score"
                 type="range"
                 min="1"
                 max="5"
                 step="1"
-                class="accent-lilac w-full"
-            />
-        </label>
-
-        <label class="text-ink mt-4 grid gap-2 text-sm font-medium">
-            {{ labels.note }}
-            <textarea
+                class="accent-peach w-full"
+        /></label>
+        <div
+            v-if="entryType === 'medicine'"
+            class="mt-4 grid gap-4 sm:grid-cols-2"
+        >
+            <label class="text-ink grid gap-2 text-sm font-semibold"
+                >Medication<input
+                    v-model="medicationName"
+                    class="border-border bg-cream min-h-12 border px-4" /></label
+            ><label class="text-ink flex min-h-12 items-end gap-2 pb-2"
+                ><input
+                    v-model="medicationTaken"
+                    type="checkbox"
+                    class="accent-peach size-5"
+                />
+                Dose taken</label
+            >
+        </div>
+        <label class="text-ink mt-4 grid gap-2 text-sm font-semibold"
+            >Notes<textarea
                 v-model="note"
-                rows="4"
-                class="border-border bg-cream text-ink focus:border-lilac rounded-2xl border px-4 py-3 outline-none"
-                :placeholder="labels.notePlaceholder"
+                rows="3"
+                maxlength="500"
+                class="border-border bg-cream focus:border-peach border px-4 py-3 outline-none"
+                placeholder="What changed? What did you notice?"
             />
         </label>
-
-        <div class="mt-5 flex items-center gap-4">
+        <div class="mt-5 flex flex-wrap items-center gap-4">
             <button
                 type="submit"
-                class="bg-ink text-surface-inverse min-h-12 rounded-full px-6 font-medium transition hover:-translate-y-0.5"
+                class="bg-peach min-h-12 rounded-full px-7 font-bold text-white"
             >
-                {{ labels.save }}
+                Save today's entry
             </button>
             <p
                 v-if="savedMessageIsVisible"
-                class="text-sage text-sm font-medium"
+                class="text-sage text-sm font-bold"
+                role="status"
             >
-                {{ labels.saved }}
+                Saved locally ✓
             </p>
         </div>
     </form>

@@ -16,12 +16,12 @@ const cardTones = ["lilac", "sage", "sky"] as const
 const pageText = computed<AboutPageText>(() => {
     if (languageCode.value === "ar")
         return {
-            eyebrow: "عن FoldCare",
-            title: "لماذا بنيت FoldCare؟",
+            eyebrow: "عن FelisFold",
+            title: "لماذا بنيت FelisFold؟",
             copy: "بدأ الأمر بقطّي لوتس، وليس بفكرة شركة أو موقع طبي.",
             paragraphs: [
                 "يعيش لوتس معي منذ أكثر من خمس سنوات. مع الوقت بدأت ألاحظ أشياء لم أفهمها: تردد قبل القفز، تيبس، حساسية عند الحمل، وقيء متكرر.",
-                "بدأت أبحث في صحة Scottish Fold لأنني أردت أن أذهب إلى الطبيب البيطري بأسئلة أفضل. FoldCare يحوّل هذا البحث إلى شيء يمكن لمالك آخر فهمه من دون جدار من المصطلحات الطبية.",
+                "بدأت أبحث في صحة Scottish Fold لأنني أردت أن أذهب إلى الطبيب البيطري بأسئلة أفضل. FelisFold يحوّل هذا البحث إلى شيء يمكن لمالك آخر فهمه من دون جدار من المصطلحات الطبية.",
                 "الموقع لا يشخّص لوتس ولا أي قط آخر. هو يفصل بين الملاحظة الشخصية والمعلومة المدعومة بالمصادر ويترك الروابط إلى الأدلة الطبية."
             ],
             cards: [
@@ -41,12 +41,12 @@ const pageText = computed<AboutPageText>(() => {
         }
     if (languageCode.value === "fr")
         return {
-            eyebrow: "À propos de FoldCare",
-            title: "Pourquoi j'ai créé FoldCare",
+            eyebrow: "À propos de FelisFold",
+            title: "Pourquoi j'ai créé FelisFold",
             copy: "Tout a commencé avec mon chat Lotus, pas avec une idée d'entreprise ou de site médical.",
             paragraphs: [
                 "Lotus vit avec moi depuis plus de cinq ans. Avec le temps, j'ai remarqué des choses que je ne comprenais pas : hésitation avant les sauts, raideur, sensibilité lorsqu'on le porte et vomissements répétés.",
-                "J'ai commencé à étudier la santé du Scottish Fold parce que je voulais poser de meilleures questions au vétérinaire. FoldCare transforme cette recherche en informations compréhensibles sans mur de jargon médical.",
+                "J'ai commencé à étudier la santé du Scottish Fold parce que je voulais poser de meilleures questions au vétérinaire. FelisFold transforme cette recherche en informations compréhensibles sans mur de jargon médical.",
                 "Le site ne diagnostique ni Lotus ni le chat de quelqu'un d'autre. Il sépare l'observation personnelle des données établies et garde les liens vers les sources médicales."
             ],
             cards: [
@@ -66,12 +66,12 @@ const pageText = computed<AboutPageText>(() => {
         }
     if (languageCode.value === "zh")
         return {
-            eyebrow: "关于 FoldCare",
-            title: "为什么做 FoldCare",
+            eyebrow: "关于 FelisFold",
+            title: "为什么做 FelisFold",
             copy: "它从我的猫 Lotus 开始，而不是从一个公司或医疗网站的想法开始。",
             paragraphs: [
                 "Lotus 和我生活了五年多。慢慢地，我注意到一些不明白的变化：跳跃前犹豫、僵硬、被抱时敏感，以及反复呕吐。",
-                "我开始研究苏格兰折耳猫健康，是因为我想带着更好的问题去见兽医。FoldCare 把这些研究整理成普通主人也能看懂的内容，而不是一堵医学术语墙。",
+                "我开始研究苏格兰折耳猫健康，是因为我想带着更好的问题去见兽医。FelisFold 把这些研究整理成普通主人也能看懂的内容，而不是一堵医学术语墙。",
                 "这个网站不会给 Lotus 或其他猫下诊断。它把个人观察和已建立的证据分开，并保留医学资料的来源链接。"
             ],
             cards: [
@@ -90,12 +90,12 @@ const pageText = computed<AboutPageText>(() => {
             ]
         }
     return {
-        eyebrow: "About FoldCare",
-        title: "Why I built FoldCare",
+        eyebrow: "About FelisFold",
+        title: "Why I built FelisFold",
         copy: "It started with my cat Lotus, not with an idea for a company or a medical website.",
         paragraphs: [
             "Lotus has lived with me for more than five years. Over time I noticed things I did not understand: hesitation before jumps, stiffness, sensitivity when being carried, and repeated vomiting.",
-            "I started researching Scottish Fold health because I wanted better questions to take to a veterinarian. FoldCare turns that work into something another owner can understand without reading a wall of medical jargon.",
+            "I started researching Scottish Fold health because I wanted better questions to take to a veterinarian. FelisFold turns that work into something another owner can understand without reading a wall of medical jargon.",
             "The site does not diagnose Lotus or anybody else's cat. It separates personal observation from established evidence and keeps links to the sources behind the medical information."
         ],
         cards: [
@@ -116,7 +116,7 @@ const pageText = computed<AboutPageText>(() => {
 })
 
 usePageSeo({
-    title: computed(() => `${pageText.value.title} — FoldCare`),
+    title: computed(() => `${pageText.value.title} — FelisFold`),
     description: computed(() => pageText.value.copy),
     image: "/images/lotus/lotus-with-creator-younger.jpg"
 })
@@ -135,7 +135,7 @@ usePageSeo({
         >
             <NuxtImg
                 src="/images/lotus/lotus-with-creator-younger.jpg"
-                alt="Lotus with the creator of FoldCare"
+                alt="Lotus with the creator of FelisFold"
                 width="1152"
                 height="1536"
                 sizes="100vw lg:42vw xl:480px"

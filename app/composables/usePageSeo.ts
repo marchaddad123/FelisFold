@@ -15,7 +15,7 @@ export function usePageSeo(options: {
     const title = computed(() => unref(options.title))
     const description = computed(() => unref(options.description))
     const siteUrl = computed(() =>
-        String(runtimeConfig.public.siteUrl || "https://foldcare.example")
+        String(runtimeConfig.public.siteUrl || "https://felisfold.com")
     )
     const canonicalUrl = computed(() =>
         new URL(route.path, siteUrl.value).toString()
@@ -59,6 +59,30 @@ export function usePageSeo(options: {
                     samePageInLanguage("en"),
                     siteUrl.value
                 ).toString()
+            }
+        ],
+        script: [
+            {
+                type: "application/ld+json",
+                innerHTML: JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "BreadcrumbList",
+                    itemListElement: route.path
+                        .split("/")
+                        .filter(Boolean)
+                        .map((part, index, parts) => ({
+                            "@type": "ListItem",
+                            position: index + 1,
+                            name:
+                                part === languageCode.value
+                                    ? "FelisFold"
+                                    : part.replaceAll("-", " "),
+                            item: new URL(
+                                `/${parts.slice(0, index + 1).join("/")}`,
+                                siteUrl.value
+                            ).toString()
+                        }))
+                })
             }
         ]
     }))

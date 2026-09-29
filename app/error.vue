@@ -30,7 +30,7 @@ function goHome() {
                 class="bg-ink text-surface-inverse mt-7 min-h-12 rounded-full px-6 font-medium"
                 @click="goHome"
             >
-                Back to FoldCare
+                Back to FelisFold
             </button>
         </div>
     </div>
