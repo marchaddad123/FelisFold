@@ -71,6 +71,9 @@ const featuredCatFaces = [cats[0]!, ...licensedScottishFoldPhotos.slice(0, 3)]
                             format="webp"
                             :quality="76"
                             class="border-cream size-11 rounded-full border-2 object-cover"
+                            :style="{
+                                objectPosition: cat.objectPosition ?? 'center'
+                            }"
                         />
                     </div>
                     <p

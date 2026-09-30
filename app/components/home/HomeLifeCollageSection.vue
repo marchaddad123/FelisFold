@@ -71,6 +71,9 @@ const rotationClasses = [
                             decoding="async"
                             placeholder
                             class="aspect-[4/5] w-full object-cover"
+                            :style="{
+                                objectPosition: cat.objectPosition ?? 'center'
+                            }"
                         />
                         <figcaption
                             class="mt-2 line-clamp-1 text-center text-xs font-semibold"

@@ -10,15 +10,15 @@
             class="border-border bg-paper relative overflow-hidden rounded-[48%_48%_2rem_2rem] border p-2 shadow-[0_1.5rem_4rem_rgb(80_53_35/0.16)] dark:shadow-[0_1.5rem_4rem_rgb(0_0_0/0.35)]"
         >
             <NuxtImg
-                src="/images/scottish-folds/sofia-fold-portrait.jpg"
-                alt="A blue Scottish Fold resting with a paw near the camera"
-                width="2640"
-                height="2466"
+                src="/images/scottish-folds/fold-in-blanket-unsplash-nodtncsldte.jpg"
+                alt="A brown Scottish Fold peeking out from a warm blanket"
+                width="1400"
+                height="875"
                 sizes="(max-width: 640px) 88vw, 448px"
                 format="webp"
                 :quality="82"
                 decoding="async"
-                class="aspect-[16/9] w-full rounded-[46%_46%_1.4rem_1.4rem] object-cover object-[center_50%]"
+                class="aspect-[16/9] w-full rounded-[46%_46%_1.4rem_1.4rem] object-cover object-[center_48%]"
             />
             <div
                 class="from-paper absolute inset-x-2 bottom-2 h-12 bg-gradient-to-t to-transparent"

@@ -234,7 +234,7 @@ test("loading screen presents the branded photo and paw progress", async ({
     )
     expect(audit).toMatchObject({
         sawLoader: true,
-        imageAlt: "A blue Scottish Fold resting with a paw near the camera",
+        imageAlt: "A brown Scottish Fold peeking out from a warm blanket",
         messageWasPresent: true,
         pawWasPresent: true,
         progressFinished: true,

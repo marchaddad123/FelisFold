@@ -47,9 +47,12 @@ export type CatProfile = {
     caption: string
     attribution: string
     source: "owner-supplied" | "licensed-public" | "demonstration"
+    photoSource: "Owner supplied" | "Pexels" | "Unsplash"
+    photographer: string
     sourceUrl?: string
-    license?: string
+    license: string
     licenseUrl?: string
+    objectPosition?: string
     isLotus: boolean
 }
 

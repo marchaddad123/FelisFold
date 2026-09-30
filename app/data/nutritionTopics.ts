@@ -1,3 +1,5 @@
+import { catPhotoById } from "~/data/cats"
+
 export type NutritionTopic = {
     id: string
     icon: string
@@ -5,7 +7,25 @@ export type NutritionTopic = {
     summary: string
     note: string
     tone: "cream" | "sky" | "sage" | "peach"
-    image: { src: string; alt: string; width: number; height: number }
+    image: {
+        src: string
+        alt: string
+        width: number
+        height: number
+        position?: string
+    }
+}
+
+function communityCatImage(id: string, alt: string): NutritionTopic["image"] {
+    const photo = catPhotoById(id)
+
+    return {
+        src: photo.photo,
+        alt,
+        width: photo.width,
+        height: photo.height,
+        ...(photo.objectPosition ? { position: photo.objectPosition } : {})
+    }
 }
 
 export const nutritionTopics: NutritionTopic[] = [
@@ -32,12 +52,10 @@ export const nutritionTopics: NutritionTopic[] = [
             "Wet food, fresh water stations and quiet bowl placement can help increase water intake.",
         note: "A sudden change in drinking deserves veterinary attention.",
         tone: "sky",
-        image: {
-            src: "/images/scottish-folds/black-fold-portrait.png",
-            alt: "A black Scottish Fold resting indoors",
-            width: 1920,
-            height: 2218
-        }
+        image: communityCatImage(
+            "fold-on-chair",
+            "A Scottish Fold resting on a chair by a window; an illustrative breed photo"
+        )
     },
     {
         id: "wet-dry",
@@ -47,12 +65,10 @@ export const nutritionTopics: NutritionTopic[] = [
             "The useful question is whether the complete diet suits the individual cat—not which format wins online.",
         note: "Use a food labelled complete for the cat's life stage.",
         tone: "sage",
-        image: {
-            src: "/images/scottish-folds/red-fold-portrait.jpg",
-            alt: "A red Scottish Fold looking toward the camera",
-            width: 1006,
-            height: 1633
-        }
+        image: communityCatImage(
+            "grey-fold-forward",
+            "A grey Scottish Fold looking ahead; an illustrative breed photo"
+        )
     },
     {
         id: "hairballs",
@@ -62,12 +78,10 @@ export const nutritionTopics: NutritionTopic[] = [
             "Regular brushing may reduce swallowed loose hair, but repeated vomiting still needs its own assessment.",
         note: "Hair in vomit does not automatically explain frequent vomiting.",
         tone: "peach",
-        image: {
-            src: "/images/scottish-folds/fold-kitten-ball.jpg",
-            alt: "A Scottish Fold kitten playing at home",
-            width: 1920,
-            height: 1280
-        }
+        image: communityCatImage(
+            "fluffy-brown-fold",
+            "A fluffy brown Scottish Fold; an illustrative breed photo"
+        )
     },
     {
         id: "transition",
@@ -77,12 +91,10 @@ export const nutritionTopics: NutritionTopic[] = [
             "Unless a veterinarian advises otherwise, transition over several days and watch appetite, stool and vomiting.",
         note: "One change at a time makes reactions easier to interpret.",
         tone: "cream",
-        image: {
-            src: "/images/scottish-folds/fold-kitten-playing.jpg",
-            alt: "A young Scottish Fold investigating a ball",
-            width: 1920,
-            height: 1280
-        }
+        image: communityCatImage(
+            "fold-kitten-playing",
+            "A young Scottish Fold playing at home; an illustrative breed photo"
+        )
     },
     {
         id: "vet",
@@ -92,12 +104,10 @@ export const nutritionTopics: NutritionTopic[] = [
             "Ongoing vomiting, weight loss, appetite change, pain or dehydration need a veterinary work-up.",
         note: "A new bag of food cannot diagnose an underlying condition.",
         tone: "peach",
-        image: {
-            src: "/images/scottish-folds/silver-tabby-kitten.jpg",
-            alt: "A silver tabby Scottish Fold kitten",
-            width: 1422,
-            height: 1829
-        }
+        image: communityCatImage(
+            "white-fold",
+            "A white Scottish Fold portrait; an illustrative breed photo"
+        )
     }
 ]
 

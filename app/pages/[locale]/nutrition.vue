@@ -309,6 +309,9 @@ usePageSeo({
                             decoding="async"
                             placeholder
                             class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                            :style="{
+                                objectPosition: topic.image.position ?? 'center'
+                            }"
                         />
                         <div class="p-5">
                             <span class="font-editorial text-sky text-2xl">{{

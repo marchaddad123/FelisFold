@@ -216,11 +216,15 @@ usePageSeo({
                         :quality="76"
                         loading="lazy"
                         class="aspect-square size-20 rounded-xl object-cover"
+                        :style="{
+                            objectPosition: cat.objectPosition ?? 'center'
+                        }"
                     />
                     <div class="min-w-0">
                         <h3 class="text-ink font-semibold">{{ cat.name }}</h3>
                         <p class="text-muted mt-1 text-sm">
-                            {{ cat.attribution }} · {{ cat.license }}
+                            {{ cat.photographer }} · {{ cat.photoSource }} ·
+                            {{ cat.license }}
                         </p>
                         <div
                             class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm"
