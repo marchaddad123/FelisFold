@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { healthTopics } from "~/data/healthTopics"
+import { healthTopicGroups, healthTopics } from "~/data/healthTopics"
 import { frequentlyAskedQuestions } from "~/data/faq"
 import { isLanguageCode } from "~/utils/languages"
 
@@ -14,21 +14,11 @@ const filters = [
     { id: "daily", label: "Daily care" },
     { id: "vet", label: "Vet visits" }
 ]
-const filterSlugs: Record<string, string[]> = {
-    mobility: [
-        "osteochondrodysplasia",
-        "pain-and-mobility",
-        "weight-and-quality-of-life"
-    ],
-    digestion: ["vomiting", "ears-and-grooming", "weight-and-quality-of-life"],
-    daily: ["ears-and-grooming", "weight-and-quality-of-life", "heart-health"],
-    vet: ["pkd", "heart-health", "when-to-call-a-vet"]
-}
 const filteredTopics = computed(() =>
     selectedFilter.value === "all"
         ? healthTopics
         : healthTopics.filter((topic) =>
-              filterSlugs[selectedFilter.value]?.includes(topic.slug)
+              healthTopicGroups[selectedFilter.value]?.includes(topic.slug)
           )
 )
 const title = computed(() =>
@@ -82,7 +72,7 @@ usePageSeo({
                     <div class="mt-7 flex flex-wrap gap-3">
                         <a
                             href="#guides"
-                            class="bg-peach inline-flex min-h-12 items-center rounded-full px-6 font-bold text-white"
+                            class="bg-peach text-on-accent inline-flex min-h-12 items-center rounded-full px-6 font-bold"
                             >Explore all guides <span class="ms-3">→</span></a
                         ><NuxtLink
                             :to="localizedPath('/resources')"
@@ -146,7 +136,7 @@ usePageSeo({
                             class="min-h-10 rounded-full border px-4 text-sm font-semibold"
                             :class="
                                 selectedFilter === filter.id
-                                    ? 'border-peach bg-peach text-white'
+                                    ? 'border-peach bg-peach text-on-accent'
                                     : 'border-border text-ink'
                             "
                             @click="selectedFilter = filter.id"

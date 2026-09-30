@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const isVisible = ref(true)
+const isFinishing = ref(false)
+let finishWasRequested = false
 const { languageCode } = useCurrentLanguage()
 
 const message = computed(() => {
@@ -16,25 +18,27 @@ const detail = computed(() => {
     return "Loading care guides"
 })
 
-let hideTimer: number | undefined
+function hideWhenProgressFinishes() {
+    isVisible.value = false
+}
 
-onMounted(() => {
-    const reduceMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-    ).matches
-    if (reduceMotion) {
+function finishLoading() {
+    if (finishWasRequested) return
+    finishWasRequested = true
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         isVisible.value = false
         return
     }
 
-    hideTimer = window.setTimeout(() => {
-        isVisible.value = false
-    }, 2600)
-})
+    window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+            isFinishing.value = true
+        })
+    })
+}
 
-onBeforeUnmount(() => {
-    if (hideTimer) window.clearTimeout(hideTimer)
-})
+onNuxtReady(finishLoading)
 </script>
 
 <template>
@@ -70,11 +74,18 @@ onBeforeUnmount(() => {
                     >
                         <div
                             class="loading-progress h-full rounded-full bg-gradient-to-r from-[#c9a07d] to-[#be4825] dark:from-[#7fb29a] dark:to-[#ef9c79]"
+                            :class="{
+                                'loading-progress-finish': isFinishing
+                            }"
+                            @animationend="hideWhenProgressFinishes"
                         />
                     </div>
                     <svg
                         viewBox="0 0 40 40"
                         class="loading-paw absolute top-1/2 size-9 -translate-x-1/2 -translate-y-1/2 text-[#8f552f] drop-shadow-[0_2px_2px_rgb(255_250_241/0.9)] dark:text-[#efb18f] dark:drop-shadow-[0_2px_2px_rgb(7_31_26/0.9)]"
+                        :class="{
+                            'loading-paw-finish': isFinishing
+                        }"
                         fill="currentColor"
                     >
                         <ellipse cx="11" cy="11" rx="4" ry="5" />

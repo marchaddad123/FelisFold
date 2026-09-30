@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { findHealthTopic } from "~/data/healthTopics"
+import {
+    findHealthTopic,
+    healthTopicGroups,
+    healthTopics
+} from "~/data/healthTopics"
 import { textForLanguage } from "~/data/siteText"
 import { isLanguageCode } from "~/utils/languages"
 
@@ -24,6 +28,47 @@ const summary = computed(() =>
 )
 const eyebrow = computed(() =>
     textForLanguage(topic.value!.eyebrow, languageCode.value)
+)
+const relatedTopics = computed(() => {
+    const currentSlug = topic.value!.slug
+    const currentGroups = Object.values(healthTopicGroups).filter((slugs) =>
+        slugs.includes(currentSlug)
+    )
+
+    return healthTopics
+        .filter((item) => item.slug !== currentSlug)
+        .map((item, originalIndex) => ({
+            item,
+            originalIndex,
+            sharedGroupCount: currentGroups.filter((slugs) =>
+                slugs.includes(item.slug)
+            ).length
+        }))
+        .sort(
+            (first, second) =>
+                second.sharedGroupCount - first.sharedGroupCount ||
+                first.originalIndex - second.originalIndex
+        )
+        .slice(0, 3)
+        .map(({ item }) => item)
+})
+const contentsLabel = computed(() =>
+    languageCode.value === "ar"
+        ? "في هذا الدليل"
+        : languageCode.value === "fr"
+          ? "Dans ce guide"
+          : languageCode.value === "zh"
+            ? "本指南内容"
+            : "In this guide"
+)
+const relatedLabel = computed(() =>
+    languageCode.value === "ar"
+        ? "أدلة ذات صلة"
+        : languageCode.value === "fr"
+          ? "Guides associés"
+          : languageCode.value === "zh"
+            ? "相关指南"
+            : "Related guides"
 )
 
 const healthLibraryLabel = computed(() =>
@@ -139,11 +184,34 @@ useHead(() => ({
 
         <MedicalInformationNotice class="mt-8" />
 
+        <nav
+            class="border-border bg-paper mt-8 rounded-[1.5rem] border p-5"
+            :aria-label="contentsLabel"
+        >
+            <p class="text-peach text-xs font-bold tracking-[0.16em] uppercase">
+                {{ contentsLabel }}
+            </p>
+            <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                <li
+                    v-for="(section, index) in topic.sections"
+                    :key="section.heading.en"
+                >
+                    <a
+                        :href="`#guide-section-${index + 1}`"
+                        class="text-ink decoration-peach/50 underline underline-offset-4"
+                    >
+                        {{ textForLanguage(section.heading, languageCode) }}
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
         <div class="mt-10 space-y-9">
             <HealthArticleSection
-                v-for="section in topic.sections"
+                v-for="(section, index) in topic.sections"
                 :key="section.heading.en"
                 :section="section"
+                :section-id="`guide-section-${index + 1}`"
             />
         </div>
 
@@ -181,5 +249,21 @@ useHead(() => ({
                 :reviewed-on="topic.reviewedOn"
             />
         </div>
+
+        <section class="mt-12" aria-labelledby="related-guides-title">
+            <h2
+                id="related-guides-title"
+                class="font-editorial text-ink text-3xl"
+            >
+                {{ relatedLabel }}
+            </h2>
+            <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <HealthTopicCard
+                    v-for="relatedTopic in relatedTopics"
+                    :key="relatedTopic.slug"
+                    :topic="relatedTopic"
+                />
+            </div>
+        </section>
     </div>
 </template>

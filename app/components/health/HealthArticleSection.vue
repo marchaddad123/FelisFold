@@ -2,7 +2,7 @@
 import type { HealthSection } from "~/types/foldcare"
 import { textForLanguage } from "~/data/siteText"
 
-const props = defineProps<{ section: HealthSection }>()
+const props = defineProps<{ section: HealthSection; sectionId?: string }>()
 const { languageCode } = useCurrentLanguage()
 
 const heading = computed(() =>
@@ -35,7 +35,8 @@ const toneClasses = computed(() => {
 
 <template>
     <section
-        class="border p-0 sm:p-0"
+        :id="sectionId"
+        class="scroll-mt-28 border p-0 sm:p-0"
         :class="[
             toneClasses,
             section.tone && section.tone !== 'plain' ? 'p-6 sm:p-8' : ''

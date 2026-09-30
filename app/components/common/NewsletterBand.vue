@@ -45,7 +45,7 @@ function submitPlaceholder() {
                 />
                 <button
                     type="submit"
-                    class="bg-peach min-h-12 rounded-full px-7 font-semibold text-white"
+                    class="bg-peach text-on-accent min-h-12 rounded-full px-7 font-semibold"
                 >
                     {{ hasSubscribed ? "Saved for later ✓" : "Subscribe" }}
                 </button>

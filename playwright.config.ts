@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test"
 
 export default defineConfig({
     testDir: "./tests",
+    globalSetup: "./tests/global-setup.ts",
     fullyParallel: true,
     workers: 2,
     forbidOnly: Boolean(process.env.CI),
@@ -16,11 +17,5 @@ export default defineConfig({
             name: "chromium",
             use: { ...devices["Desktop Chrome"] }
         }
-    ],
-    webServer: {
-        command: "npx nuxt dev --host 127.0.0.1 --port 4173 --no-fork",
-        url: "http://127.0.0.1:4173/en",
-        reuseExistingServer: !process.env.CI,
-        timeout: 120_000
-    }
+    ]
 })

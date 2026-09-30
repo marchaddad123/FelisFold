@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test"
 
-test("tracker saves and reloads local entries", async ({ page }) => {
+test("tracker creates, edits, removes and persists local entries", async ({
+    page
+}) => {
     await page.goto("/en/tracker")
     await page.getByLabel("Food name").fill("Complete wet food")
     await page.getByLabel("Amount").fill("45")
@@ -10,6 +12,110 @@ test("tracker saves and reloads local entries", async ({ page }) => {
     await expect(page.getByText("Complete wet food")).toBeVisible()
     await page.reload()
     await expect(page.getByText("Complete wet food")).toBeVisible()
+    await page.getByRole("button", { name: "Edit Meal entry" }).click()
+    await page.getByLabel("Food name").fill("Updated complete wet food")
+    await page.getByRole("button", { name: "Save changes" }).click()
+    await expect(page.getByText("Updated complete wet food")).toBeVisible()
+    await page.reload()
+    await expect(page.getByText("Updated complete wet food")).toBeVisible()
+    await page.getByRole("button", { name: "Remove Meal entry" }).click()
+    await expect(page.getByText("No entries yet.")).toBeVisible()
+})
+
+test("tracker supports every entry type and validates numeric input", async ({
+    page
+}) => {
+    test.setTimeout(120_000)
+    await page.goto("/en/tracker")
+    await expect(page.getByRole("status").first()).toBeHidden({
+        timeout: 5_000
+    })
+
+    const saveButton = page.getByRole("button", { name: "Save today's entry" })
+    let expectedEntryCount = 0
+    const saveEntry = async () => {
+        await saveButton.click()
+        expectedEntryCount += 1
+        await expect(
+            page.getByRole("button", { name: /^Remove / })
+        ).toHaveCount(expectedEntryCount)
+    }
+    const selectEntryType = async (entryType: string) => {
+        const input = page.locator(
+            `input[name="entry-type"][value="${entryType}"]`
+        )
+        await expect(async () => {
+            await input.locator("..").click()
+            await expect(input).toBeChecked()
+        }).toPass({ timeout: 5_000 })
+    }
+
+    await selectEntryType("meal")
+    await page.getByLabel("Food name").fill("Complete food")
+    await page.getByLabel("Amount").fill("-1")
+    expect(
+        await page
+            .getByLabel("Amount")
+            .evaluate((input: HTMLInputElement) => input.checkValidity())
+    ).toBe(false)
+    await page.getByLabel("Amount").fill("40")
+    await saveEntry()
+
+    await selectEntryType("water")
+    await page.getByLabel("Amount").fill("120")
+    await saveEntry()
+
+    await selectEntryType("vomit")
+    await page.getByLabel("Hair was present").check()
+    await saveEntry()
+
+    await selectEntryType("litter")
+    await page.getByLabel("Stool quality").selectOption("soft")
+    await saveEntry()
+
+    for (const entryType of [
+        "appetite",
+        "mood",
+        "pain",
+        "mobility",
+        "grooming"
+    ]) {
+        await selectEntryType(entryType)
+        await page.getByRole("slider").fill("4")
+        await saveEntry()
+    }
+
+    await selectEntryType("medicine")
+    await page
+        .getByLabel("Medication", { exact: true })
+        .last()
+        .fill("Prescribed dose")
+    await saveEntry()
+
+    await selectEntryType("weight")
+    await page.getByLabel("Amount").fill("4.8")
+    await saveEntry()
+
+    await selectEntryType("note")
+    await page.getByLabel("Notes").fill("x".repeat(600))
+    await expect(page.getByLabel("Notes")).toHaveValue("x".repeat(500))
+    await saveEntry()
+
+    await expect(page.getByRole("button", { name: /^Remove / })).toHaveCount(12)
+    await page.reload()
+    await expect(page.getByRole("button", { name: /^Remove / })).toHaveCount(12)
+
+    const clearAllButton = page.getByRole("button", { name: "Clear all" })
+    await clearAllButton.click()
+    await expect(page.getByRole("button", { name: "Cancel" })).toBeFocused()
+    await page.keyboard.press("Escape")
+    await expect(clearAllButton).toBeFocused()
+    await clearAllButton.click()
+    await page.getByRole("button", { name: "Clear entries" }).click()
+    await expect(page.getByText("No entries yet.")).toBeVisible()
+    await expect(
+        page.getByRole("heading", { name: "Build a useful health story." })
+    ).toBeFocused()
 })
 
 test("local search covers health, nutrition and resources", async ({
@@ -34,18 +140,108 @@ test("loading screen presents the branded photo and paw progress", async ({
 }) => {
     await page.addInitScript(() => {
         window.localStorage.setItem("felisfold-theme", "light")
+        const audit = {
+            sawLoader: false,
+            imageAlt: "",
+            messageWasPresent: false,
+            pawWasPresent: false,
+            progressFinished: false,
+            progressRatio: 0,
+            fadeStarted: false,
+            hiddenAfterFade: false
+        }
+        Object.defineProperty(window, "__felisFoldLoaderAudit", {
+            value: audit
+        })
+
+        const inspectLoader = () => {
+            const loader = document.querySelector<HTMLElement>(".loading-stage")
+            if (loader) {
+                audit.sawLoader = true
+                audit.imageAlt =
+                    loader.querySelector("img")?.getAttribute("alt") ?? ""
+                audit.messageWasPresent = Boolean(
+                    loader.textContent?.includes("Getting things ready")
+                )
+                audit.pawWasPresent = Boolean(
+                    loader.querySelector(".loading-paw")
+                )
+                audit.fadeStarted ||= loader.classList.contains(
+                    "loading-screen-leave-active"
+                )
+            } else if (
+                audit.sawLoader &&
+                audit.progressFinished &&
+                audit.fadeStarted
+            ) {
+                audit.hiddenAfterFade = true
+            }
+        }
+
+        new MutationObserver(inspectLoader).observe(document, {
+            attributes: true,
+            childList: true,
+            subtree: true
+        })
+        document.addEventListener(
+            "animationend",
+            (event) => {
+                const progress = event.target
+                if (
+                    !(progress instanceof HTMLElement) ||
+                    !progress.classList.contains("loading-progress")
+                )
+                    return
+                const trackWidth =
+                    progress.parentElement?.getBoundingClientRect().width
+                audit.progressRatio = trackWidth
+                    ? progress.getBoundingClientRect().width / trackWidth
+                    : 0
+                audit.progressFinished = true
+                inspectLoader()
+            },
+            true
+        )
     })
     await page.goto("/en", { waitUntil: "domcontentloaded" })
-    const loadingScreen = page.getByRole("status")
-    await expect(loadingScreen).toBeVisible()
-    await expect(
-        loadingScreen.getByRole("img", {
-            name: "A blue Scottish Fold resting with a paw near the camera"
-        })
-    ).toBeVisible()
-    await expect(loadingScreen.getByText("Getting things ready…")).toBeVisible()
-    await expect(loadingScreen.locator(".loading-paw")).toBeVisible()
-    await expect(loadingScreen).toBeHidden({ timeout: 15_000 })
+    await expect
+        .poll(
+            () =>
+                page.evaluate(
+                    () =>
+                        (
+                            window as Window & {
+                                __felisFoldLoaderAudit: {
+                                    hiddenAfterFade: boolean
+                                }
+                            }
+                        ).__felisFoldLoaderAudit.hiddenAfterFade
+                ),
+            { timeout: 5_000 }
+        )
+        .toBe(true)
+
+    const audit = await page.evaluate(
+        () =>
+            (
+                window as Window & {
+                    __felisFoldLoaderAudit: Record<
+                        string,
+                        string | number | boolean
+                    >
+                }
+            ).__felisFoldLoaderAudit
+    )
+    expect(audit).toMatchObject({
+        sawLoader: true,
+        imageAlt: "A blue Scottish Fold resting with a paw near the camera",
+        messageWasPresent: true,
+        pawWasPresent: true,
+        progressFinished: true,
+        fadeStarted: true,
+        hiddenAfterFade: true
+    })
+    expect(audit.progressRatio).toBeGreaterThanOrEqual(0.99)
 })
 
 test("responsive notes, observation bullets and short search results stay aligned", async ({
@@ -114,9 +310,12 @@ test("main routes avoid horizontal overflow at common widths", async ({
         "/en/lotus",
         "/en/tracker",
         "/en/resources",
+        "/en/care",
+        "/en/about",
+        "/en/sources",
         "/ar"
     ]
-    const widths = [375, 430, 768, 1024, 1440]
+    const widths = [320, 360, 375, 390, 430, 768, 820, 1024, 1440, 1920]
     for (const width of widths) {
         await page.setViewportSize({ width, height: 900 })
         for (const route of routes) {

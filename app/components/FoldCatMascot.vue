@@ -22,12 +22,9 @@ const imageSizes = computed(
 )
 
 function petCat() {
-    if (!props.interactive) return
+    if (!props.interactive || showHeart.value) return
 
     showHeart.value = true
-    window.setTimeout(() => {
-        showHeart.value = false
-    }, 1100)
 }
 </script>
 
@@ -42,12 +39,13 @@ function petCat() {
     >
         <span
             v-if="showHeart"
-            class="text-peach absolute -end-1 -top-4 z-10 text-xl drop-shadow-sm"
+            class="mascot-heart-pop text-peach absolute -end-1 -top-4 z-10 text-xl drop-shadow-sm"
             aria-hidden="true"
+            @animationend="showHeart = false"
             >♥</span
         >
         <span
-            class="border-border bg-surface aspect-square w-full overflow-hidden rounded-[38%] border shadow-sm transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md"
+            class="border-border bg-surface block aspect-square w-full overflow-hidden rounded-[38%] border shadow-sm transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md"
         >
             <NuxtImg
                 src="/images/lotus/lotus-portrait.jpg"

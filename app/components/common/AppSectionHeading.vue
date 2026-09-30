@@ -5,11 +5,13 @@ withDefaults(
         title: string
         copy?: string
         align?: "left" | "center"
+        headingLevel?: 1 | 2 | 3
     }>(),
     {
         eyebrow: "",
         copy: "",
-        align: "left"
+        align: "left",
+        headingLevel: 2
     }
 )
 </script>
@@ -26,11 +28,12 @@ withDefaults(
         >
             {{ eyebrow }}
         </p>
-        <h2
+        <component
+            :is="`h${headingLevel}`"
             class="text-ink text-3xl font-semibold tracking-[-0.03em] sm:text-4xl"
         >
             {{ title }}
-        </h2>
+        </component>
         <p
             v-if="copy"
             class="text-muted mt-4 text-base leading-7 sm:text-lg sm:leading-8"

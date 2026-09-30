@@ -30,7 +30,7 @@ const { localizedPath } = useLocalizedPath()
                 <div class="mt-7 flex flex-wrap gap-3">
                     <a
                         href="#lotus-story"
-                        class="bg-peach inline-flex min-h-12 items-center rounded-full px-6 font-bold text-white"
+                        class="bg-peach text-on-accent inline-flex min-h-12 items-center rounded-full px-6 font-bold"
                         >Our story <span class="ms-3">🐾</span></a
                     ><NuxtLink
                         :to="localizedPath('/health')"

@@ -151,6 +151,7 @@ usePageSeo({
                 :eyebrow="pageText.eyebrow"
                 :title="pageText.title"
                 :copy="pageText.copy"
+                :heading-level="1"
             />
             <NuxtImg
                 src="/images/lotus/lotus-glasses.jpg"

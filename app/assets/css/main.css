@@ -24,6 +24,7 @@
     --color-danger: #a5362b;
     --color-danger-soft: #f9dcd5;
     --color-surface-inverse: #ffffff;
+    --color-on-accent: #ffffff;
     --color-forest: #0d352c;
     --color-cat: #c6b39d;
     --color-cat-dark: #8b7562;
@@ -55,6 +56,7 @@ html.dark {
     --color-danger: #f09a9a;
     --color-danger-soft: #492623;
     --color-surface-inverse: #10221d;
+    --color-on-accent: #10221d;
     --color-forest: #071b17;
     --color-cat: #a5a7af;
     --color-cat-dark: #81848e;
@@ -337,14 +339,20 @@ textarea {
 }
 
 .loading-progress {
-    width: 8%;
-    animation: loading-progress-fill 2350ms cubic-bezier(0.22, 0.7, 0.26, 1)
-        forwards;
+    width: 12%;
 }
 
 .loading-paw {
-    left: 8%;
-    animation: loading-paw-travel 2350ms cubic-bezier(0.22, 0.7, 0.26, 1)
+    left: 12%;
+}
+
+.loading-progress-finish {
+    animation: loading-progress-finish 320ms cubic-bezier(0.22, 0.7, 0.26, 1)
+        forwards;
+}
+
+.loading-paw-finish {
+    animation: loading-paw-finish 320ms cubic-bezier(0.22, 0.7, 0.26, 1)
         forwards;
 }
 
@@ -352,18 +360,22 @@ textarea {
     animation: loading-cat-settle 700ms ease-out both;
 }
 
-@keyframes loading-progress-fill {
+.mascot-heart-pop {
+    animation: mascot-heart-pop 700ms ease-out both;
+}
+
+@keyframes loading-progress-finish {
     from {
-        width: 8%;
+        width: 12%;
     }
     to {
         width: 100%;
     }
 }
 
-@keyframes loading-paw-travel {
+@keyframes loading-paw-finish {
     from {
-        left: 8%;
+        left: 12%;
     }
     to {
         left: calc(100% - 1rem);
@@ -378,6 +390,21 @@ textarea {
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes mascot-heart-pop {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.7);
+    }
+    35% {
+        opacity: 1;
+        transform: translateY(-0.35rem) scale(1.15);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-0.75rem) scale(0.9);
     }
 }
 

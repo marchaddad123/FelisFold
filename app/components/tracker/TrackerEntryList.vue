@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { TrackerEntry } from "~/types/foldcare"
+
 const { entries, removeEntry } = useHealthTracker()
+const emit = defineEmits<{ edit: [entry: TrackerEntry] }>()
 const typeLabels: Record<string, string> = {
     meal: "Meal",
     water: "Water",
@@ -126,13 +129,24 @@ function scoreText(entry: (typeof entries.value)[number]): string | null {
                         {{ entry.note }}
                     </p>
                 </div>
-                <button
-                    type="button"
-                    class="text-muted hover:text-danger min-h-10 px-3 text-xs font-bold"
-                    @click="removeEntry(entry.id)"
-                >
-                    Remove
-                </button>
+                <div class="flex items-center gap-1 sm:flex-col sm:items-end">
+                    <button
+                        type="button"
+                        class="text-sky min-h-10 px-3 text-xs font-bold"
+                        :aria-label="`Edit ${typeLabels[entry.type]} entry`"
+                        @click="emit('edit', entry)"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        type="button"
+                        class="text-muted hover:text-danger min-h-10 px-3 text-xs font-bold"
+                        :aria-label="`Remove ${typeLabels[entry.type]} entry`"
+                        @click="removeEntry(entry.id)"
+                    >
+                        Remove
+                    </button>
+                </div>
             </article>
         </div>
     </section>

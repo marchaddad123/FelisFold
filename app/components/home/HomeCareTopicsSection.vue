@@ -72,7 +72,7 @@ const topics = [
                         {{ topic.copy }}
                     </p>
                     <span
-                        class="text-peach group-hover:bg-peach mt-5 inline-grid size-9 place-items-center rounded-full border border-current transition group-hover:text-white"
+                        class="text-peach group-hover:bg-peach group-hover:text-on-accent mt-5 inline-grid size-9 place-items-center rounded-full border border-current transition"
                         aria-hidden="true"
                         >→</span
                     >

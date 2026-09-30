@@ -45,7 +45,7 @@ const featuredCatFaces = [cats[0]!, ...licensedScottishFoldPhotos.slice(0, 3)]
                 <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <NuxtLink
                         :to="localizedPath('/lotus')"
-                        class="bg-peach inline-flex min-h-12 items-center justify-center rounded-full px-7 font-bold text-white shadow-sm transition hover:-translate-y-0.5"
+                        class="bg-peach text-on-accent inline-flex min-h-12 items-center justify-center rounded-full px-7 font-bold shadow-sm transition hover:-translate-y-0.5"
                         >{{ meetLotus }}
                         <span class="ms-3" aria-hidden="true"
                             >🐾</span

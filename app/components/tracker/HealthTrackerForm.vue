@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import type { TrackerEntryType } from "~/types/foldcare"
+import type { TrackerEntry, TrackerEntryType } from "~/types/foldcare"
 
-const { addEntry } = useHealthTracker()
-const emit = defineEmits<{ saved: [] }>()
+const props = withDefaults(
+    defineProps<{ entryToEdit?: TrackerEntry | null }>(),
+    { entryToEdit: null }
+)
+const { addEntry, updateEntry } = useHealthTracker()
+const emit = defineEmits<{ saved: []; cancelled: [] }>()
 function localDateTime(): string {
     const now = new Date()
     return new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
@@ -46,12 +50,76 @@ const scoreTypes: TrackerEntryType[] = [
     "grooming"
 ]
 
-watch(entryType, (nextType) => {
+function localDateTimeFromIso(dateTime: string): string {
+    const date = new Date(dateTime)
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+        .toISOString()
+        .slice(0, 16)
+}
+
+function resetForm() {
+    entryType.value = "meal"
+    dateTime.value = localDateTime()
+    note.value = ""
     amount.value = undefined
-    unit.value =
-        nextType === "weight" ? "kg" : nextType === "water" ? "ml" : "g"
+    unit.value = "g"
+    foodName.value = ""
+    vomitHadHair.value = false
+    vomitHadBlood.value = false
+    stoolQuality.value = "normal"
+    score.value = 3
+    medicationName.value = ""
+    medicationTaken.value = true
     savedMessageIsVisible.value = false
-})
+}
+
+watch(
+    () => props.entryToEdit,
+    (entry) => {
+        if (!entry) {
+            resetForm()
+            return
+        }
+
+        entryType.value = entry.type
+        dateTime.value = localDateTimeFromIso(entry.dateTime)
+        note.value = entry.note
+        amount.value = entry.amount
+        unit.value =
+            entry.unit ??
+            (entry.type === "weight"
+                ? "kg"
+                : entry.type === "water"
+                  ? "ml"
+                  : "g")
+        foodName.value = entry.foodName ?? ""
+        vomitHadHair.value = entry.vomitHadHair ?? false
+        vomitHadBlood.value = entry.vomitHadBlood ?? false
+        stoolQuality.value = entry.stoolQuality ?? "normal"
+        score.value =
+            entry.appetiteScore ??
+            entry.moodScore ??
+            entry.painScore ??
+            entry.mobilityScore ??
+            entry.groomingScore ??
+            3
+        medicationName.value = entry.medicationName ?? ""
+        medicationTaken.value = entry.medicationTaken ?? true
+        savedMessageIsVisible.value = false
+    },
+    { immediate: true }
+)
+
+watch(
+    entryType,
+    (nextType) => {
+        amount.value = undefined
+        unit.value =
+            nextType === "weight" ? "kg" : nextType === "water" ? "ml" : "g"
+        savedMessageIsVisible.value = false
+    },
+    { flush: "sync" }
+)
 
 function saveEntry() {
     const scoreFields = {
@@ -67,7 +135,7 @@ function saveEntry() {
             ? { groomingScore: score.value }
             : {})
     }
-    addEntry({
+    const entry: Omit<TrackerEntry, "id"> = {
         type: entryType.value,
         dateTime: new Date(dateTime.value).toISOString(),
         note: note.value.trim(),
@@ -93,11 +161,15 @@ function saveEntry() {
               }
             : {}),
         ...scoreFields
-    })
-    note.value = ""
-    amount.value = undefined
-    vomitHadHair.value = false
-    vomitHadBlood.value = false
+    }
+
+    if (props.entryToEdit) {
+        updateEntry({ ...entry, id: props.entryToEdit.id })
+    } else {
+        addEntry(entry)
+    }
+
+    resetForm()
     savedMessageIsVisible.value = true
     emit("saved")
 }
@@ -110,7 +182,9 @@ function saveEntry() {
     >
         <fieldset>
             <legend class="font-editorial text-ink text-2xl">
-                What are you recording?
+                {{
+                    entryToEdit ? "Edit this entry" : "What are you recording?"
+                }}
             </legend>
             <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
                 <label
@@ -245,9 +319,17 @@ function saveEntry() {
         <div class="mt-5 flex flex-wrap items-center gap-4">
             <button
                 type="submit"
-                class="bg-peach min-h-12 rounded-full px-7 font-bold text-white"
+                class="bg-peach text-on-accent min-h-12 rounded-full px-7 font-bold"
             >
-                Save today's entry
+                {{ entryToEdit ? "Save changes" : "Save today's entry" }}
+            </button>
+            <button
+                v-if="entryToEdit"
+                type="button"
+                class="border-border text-ink min-h-12 rounded-full border px-6 font-bold"
+                @click="emit('cancelled')"
+            >
+                Cancel editing
             </button>
             <p
                 v-if="savedMessageIsVisible"

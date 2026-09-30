@@ -15,6 +15,7 @@
         "lint:fix": "eslint . --fix",
         "format": "prettier . --write",
         "format:check": "prettier . --check",
+        "pretest:e2e": "nuxt build",
         "test:e2e": "playwright test",
         "preview": "nuxt preview",
         "typecheck": "nuxt typecheck",
@@ -27,8 +28,9 @@
         "vue-router": "^5.3.1"
     },
     "devDependencies": {
-        "@playwright/test": "^1.63.0",
+        "@axe-core/playwright": "^4.13.0",
         "@nuxt/eslint": "^1.10.0",
+        "@playwright/test": "^1.63.0",
         "@tailwindcss/vite": "^4.3.3",
         "eslint": "^10.9.0",
         "eslint-config-prettier": "^10.1.8",

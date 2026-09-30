@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { isLanguageCode } from "~/utils/languages"
 import { vetVisitChecklist } from "~/data/resourceData"
+import type { TrackerEntry } from "~/types/foldcare"
 
 definePageMeta({ validate: (route) => isLanguageCode(route.params.locale) })
 const { loadEntries, entries, clearAllEntries, entriesWithinDays } =
@@ -8,6 +9,11 @@ const { loadEntries, entries, clearAllEntries, entriesWithinDays } =
 const selectedDays = ref<7 | 30>(7)
 const confirmClearIsOpen = ref(false)
 const formElement = ref<HTMLElement>()
+const entryBeingEdited = ref<TrackerEntry | null>(null)
+const clearAllButton = ref<HTMLButtonElement>()
+const clearDialog = ref<HTMLElement>()
+const cancelClearButton = ref<HTMLButtonElement>()
+const trackerEntriesHeading = ref<HTMLElement>()
 
 onMounted(loadEntries)
 
@@ -17,6 +23,40 @@ function scrollToForm() {
 function clearTrackerEntries() {
     clearAllEntries()
     confirmClearIsOpen.value = false
+    nextTick(() => trackerEntriesHeading.value?.focus())
+}
+async function openClearDialog() {
+    confirmClearIsOpen.value = true
+    await nextTick()
+    cancelClearButton.value?.focus()
+}
+function closeClearDialog() {
+    confirmClearIsOpen.value = false
+    nextTick(() => clearAllButton.value?.focus())
+}
+function keepFocusInsideClearDialog(event: KeyboardEvent) {
+    if (event.key !== "Tab") return
+    const focusableElements = clearDialog.value?.querySelectorAll<HTMLElement>(
+        "button:not([disabled])"
+    )
+    if (!focusableElements?.length) return
+
+    const firstElement = focusableElements[0]
+    const lastElement = focusableElements[focusableElements.length - 1]
+    if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement?.focus()
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement?.focus()
+    }
+}
+function editEntry(entry: TrackerEntry) {
+    entryBeingEdited.value = entry
+    scrollToForm()
+}
+function finishEditing() {
+    entryBeingEdited.value = null
 }
 function exportSummary() {
     const lines = entriesWithinDays(selectedDays.value).map(
@@ -74,7 +114,7 @@ usePageSeo({
                     </p>
                     <button
                         type="button"
-                        class="bg-peach mt-7 inline-flex min-h-12 w-fit items-center rounded-full px-6 font-bold text-white"
+                        class="bg-peach text-on-accent mt-7 inline-flex min-h-12 w-fit items-center rounded-full px-6 font-bold"
                         @click="scrollToForm"
                     >
                         Add today's entry <span class="ms-3">+</span>
@@ -127,7 +167,7 @@ usePageSeo({
                             class="min-h-10 rounded-full px-4 text-sm font-bold"
                             :class="
                                 selectedDays === days
-                                    ? 'bg-sky text-white'
+                                    ? 'bg-sky text-on-accent'
                                     : 'text-ink'
                             "
                             @click="selectedDays = days"
@@ -148,7 +188,11 @@ usePageSeo({
                     >
                         Track what matters
                     </p>
-                    <h2 class="font-editorial text-ink mt-2 text-4xl">
+                    <h2
+                        ref="trackerEntriesHeading"
+                        tabindex="-1"
+                        class="font-editorial text-ink mt-2 text-4xl"
+                    >
                         Build a useful health story.
                     </h2>
                 </div>
@@ -162,9 +206,10 @@ usePageSeo({
                         Export summary</button
                     ><button
                         v-if="entries.length"
+                        ref="clearAllButton"
                         type="button"
                         class="text-danger min-h-11 px-3 text-sm font-bold"
-                        @click="confirmClearIsOpen = true"
+                        @click="openClearDialog"
                     >
                         Clear all
                     </button>
@@ -173,8 +218,14 @@ usePageSeo({
             <div
                 class="mt-8 grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start"
             >
-                <div ref="formElement"><HealthTrackerForm /></div>
-                <TrackerEntryList />
+                <div ref="formElement">
+                    <HealthTrackerForm
+                        :entry-to-edit="entryBeingEdited"
+                        @saved="finishEditing"
+                        @cancelled="finishEditing"
+                    />
+                </div>
+                <TrackerEntryList @edit="editEntry" />
             </div>
             <TrackerTrendChart :days="selectedDays" class="mt-8" />
         </section>
@@ -209,7 +260,7 @@ usePageSeo({
                     </ul>
                     <button
                         type="button"
-                        class="bg-peach mt-6 min-h-11 rounded-full px-5 font-bold text-white"
+                        class="bg-peach text-on-accent mt-6 min-h-11 rounded-full px-5 font-bold"
                         @click="exportSummary"
                     >
                         Download {{ selectedDays }}-day summary →
@@ -253,7 +304,7 @@ usePageSeo({
                     </p>
                     <button
                         type="button"
-                        class="bg-peach mt-6 min-h-12 rounded-full px-7 font-bold text-white"
+                        class="bg-peach text-on-accent mt-6 min-h-12 rounded-full px-7 font-bold"
                         @click="scrollToForm"
                     >
                         Start tracking now →
@@ -272,10 +323,14 @@ usePageSeo({
             role="dialog"
             aria-modal="true"
             aria-labelledby="clear-tracker-title"
-            @keydown.esc="confirmClearIsOpen = false"
-            @click.self="confirmClearIsOpen = false"
+            @keydown="keepFocusInsideClearDialog"
+            @keydown.esc.stop.prevent="closeClearDialog"
+            @click.self="closeClearDialog"
         >
-            <div class="bg-paper w-full max-w-md p-6 shadow-2xl">
+            <div
+                ref="clearDialog"
+                class="bg-paper w-full max-w-md p-6 shadow-2xl"
+            >
                 <h2
                     id="clear-tracker-title"
                     class="font-editorial text-ink text-2xl"
@@ -289,14 +344,15 @@ usePageSeo({
                 <div class="mt-6 flex gap-3">
                     <button
                         type="button"
-                        class="bg-danger min-h-11 rounded-full px-5 font-bold text-white"
+                        class="bg-danger text-on-accent min-h-11 rounded-full px-5 font-bold"
                         @click="clearTrackerEntries"
                     >
                         Clear entries</button
                     ><button
+                        ref="cancelClearButton"
                         type="button"
                         class="border-border text-ink min-h-11 rounded-full border px-5 font-bold"
-                        @click="confirmClearIsOpen = false"
+                        @click="closeClearDialog"
                     >
                         Cancel
                     </button>

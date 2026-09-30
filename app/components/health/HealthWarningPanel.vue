@@ -28,7 +28,7 @@ const { localizedPath } = useLocalizedPath()
         </ul>
         <NuxtLink
             :to="localizedPath('/health/when-to-call-a-vet')"
-            class="bg-peach mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-full px-5 text-sm font-bold text-white"
+            class="bg-peach text-on-accent mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-full px-5 text-sm font-bold"
             >When to call a vet
             <span class="ms-2" aria-hidden="true">→</span></NuxtLink
         >

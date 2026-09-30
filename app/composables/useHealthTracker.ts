@@ -76,6 +76,21 @@ export function useHealthTracker() {
         saveEntries()
     }
 
+    function updateEntry(updatedEntry: TrackerEntry) {
+        if (!entries.value.some((entry) => entry.id === updatedEntry.id)) return
+
+        entries.value = entries.value
+            .map((entry) =>
+                entry.id === updatedEntry.id ? updatedEntry : entry
+            )
+            .sort(
+                (first, second) =>
+                    new Date(second.dateTime).getTime() -
+                    new Date(first.dateTime).getTime()
+            )
+        saveEntries()
+    }
+
     function clearAllEntries() {
         entries.value = []
         saveEntries()
@@ -105,6 +120,7 @@ export function useHealthTracker() {
         latestWeight,
         loadEntries,
         addEntry,
+        updateEntry,
         removeEntry,
         clearAllEntries,
         countEntriesByType,

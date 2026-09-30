@@ -2,10 +2,6 @@
 const props = defineProps<{
     error: { statusCode?: number; statusMessage?: string }
 }>()
-
-function goHome() {
-    clearError({ redirect: "/en" })
-}
 </script>
 
 <template>
@@ -25,13 +21,12 @@ function goHome() {
             <p class="text-muted mt-4 leading-7">
                 The page does not exist, moved, or could not load correctly.
             </p>
-            <button
-                type="button"
-                class="bg-ink text-surface-inverse mt-7 min-h-12 rounded-full px-6 font-medium"
-                @click="goHome"
+            <a
+                href="/en"
+                class="bg-ink text-surface-inverse mt-7 inline-flex min-h-12 items-center rounded-full px-6 font-medium"
             >
                 Back to FelisFold
-            </button>
+            </a>
         </div>
     </div>
 </template>

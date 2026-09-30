@@ -128,6 +128,7 @@ usePageSeo({
             :eyebrow="pageText.eyebrow"
             :title="pageText.title"
             :copy="pageText.copy"
+            :heading-level="1"
         />
 
         <section

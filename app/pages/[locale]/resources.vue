@@ -95,7 +95,7 @@ useHead({
                     </p>
                     <a
                         href="#research"
-                        class="bg-peach mt-7 inline-flex min-h-12 w-fit items-center rounded-full px-6 font-bold text-white"
+                        class="bg-peach text-on-accent mt-7 inline-flex min-h-12 w-fit items-center rounded-full px-6 font-bold"
                         >Explore the resources <span class="ms-3">🐾</span></a
                     >
                 </div>
@@ -126,7 +126,7 @@ useHead({
                         </p>
                         <NuxtLink
                             :to="localizedPath('/health/when-to-call-a-vet')"
-                            class="bg-peach mt-4 inline-flex min-h-10 items-center rounded-full px-4 text-sm font-bold text-white"
+                            class="bg-peach text-on-accent mt-4 inline-flex min-h-10 items-center rounded-full px-4 text-sm font-bold"
                             >Get guidance now →</NuxtLink
                         >
                     </div>
@@ -292,7 +292,7 @@ useHead({
                     </ol>
                     <button
                         type="button"
-                        class="bg-peach mt-6 min-h-11 rounded-full px-5 font-bold text-white"
+                        class="bg-peach text-on-accent mt-6 min-h-11 rounded-full px-5 font-bold"
                         @click="downloadChecklist"
                     >
                         Download checklist →

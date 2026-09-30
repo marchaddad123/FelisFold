@@ -186,7 +186,7 @@ usePageSeo({
                     <div class="mt-7 flex flex-wrap gap-3">
                         <a
                             href="#nutrition-topics"
-                            class="bg-peach inline-flex min-h-12 items-center rounded-full px-6 font-bold text-white"
+                            class="bg-peach text-on-accent inline-flex min-h-12 items-center rounded-full px-6 font-bold"
                             >Explore nutrition topics
                             <span class="ms-3">→</span></a
                         ><NuxtLink
@@ -259,11 +259,11 @@ usePageSeo({
                     placeholder
                     class="aspect-[4/3] w-full rounded-[48%_48%_8%_8%] object-cover object-[center_58%]"
                 />
-                <div class="bg-[#fffaf1] p-5 shadow-xl">
-                    <p class="font-handwritten text-ink text-lg">
+                <div class="bg-[#fffaf1] p-5 text-[#18231f] shadow-xl">
+                    <p class="font-handwritten text-lg">
                         Real progress can look like:
                     </p>
-                    <ul class="text-muted mt-4 space-y-3 text-sm">
+                    <ul class="mt-4 space-y-3 text-sm text-[#5f625c]">
                         <li>✓ Fewer vomiting episodes</li>
                         <li>✓ Calmer, measured eating</li>
                         <li>✓ Better hydration</li>
@@ -434,7 +434,7 @@ usePageSeo({
                 </p>
                 <NuxtLink
                     :to="localizedPath('/tracker')"
-                    class="bg-peach mt-6 inline-flex min-h-11 items-center rounded-full px-5 font-bold text-white"
+                    class="bg-peach text-on-accent mt-6 inline-flex min-h-11 items-center rounded-full px-5 font-bold"
                     >Open the tracker →</NuxtLink
                 >
             </div>

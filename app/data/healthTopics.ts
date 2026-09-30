@@ -21,6 +21,17 @@ const localizedBullets = (
     zh: string[]
 ): Record<LanguageCode, string[]> => ({ en, ar, fr, zh })
 
+export const healthTopicGroups: Record<string, string[]> = {
+    mobility: [
+        "osteochondrodysplasia",
+        "pain-and-mobility",
+        "weight-and-quality-of-life"
+    ],
+    digestion: ["vomiting", "ears-and-grooming", "weight-and-quality-of-life"],
+    daily: ["ears-and-grooming", "weight-and-quality-of-life", "heart-health"],
+    vet: ["pkd", "heart-health", "when-to-call-a-vet"]
+}
+
 export const healthTopics: HealthTopic[] = [
     {
         slug: "osteochondrodysplasia",
