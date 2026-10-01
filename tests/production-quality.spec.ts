@@ -1,5 +1,10 @@
 import AxeBuilder from "@axe-core/playwright"
 import { expect, test, type Page } from "@playwright/test"
+import {
+    creatorProfile,
+    creatorSocialLinks,
+    getAvailableCreatorSocialLinks
+} from "../app/data/creatorProfile"
 
 const languages = ["en", "ar", "fr", "zh"]
 const mainPaths = [
@@ -12,6 +17,7 @@ const mainPaths = [
     "/sources",
     "/resources",
     "/about",
+    "/contact",
     "/search"
 ]
 const healthSlugs = [
@@ -337,6 +343,72 @@ test("content images provide intrinsic dimensions, responsive sizes and alt text
             )
         expect(imageProblems, route).toEqual([])
     }
+})
+
+test("creator identity is placed consistently and uses safe external links", async ({
+    page
+}) => {
+    await page.goto("/en")
+    await waitForLoadingScreen(page)
+    const sectionOrder = await page
+        .locator("#lotus-home-story, #creator-introduction, #home-care-topics")
+        .evaluateAll((sections) => sections.map((section) => section.id))
+    expect(sectionOrder).toEqual([
+        "lotus-home-story",
+        "creator-introduction",
+        "home-care-topics"
+    ])
+
+    for (const route of ["/en/about", "/en/contact"]) {
+        await page.goto(route)
+        await waitForLoadingScreen(page)
+        await expect(page.getByText(creatorProfile.name).first()).toBeVisible()
+        for (const social of creatorSocialLinks) {
+            const link = page.locator(`a[href="${social.url}"]`).first()
+            await expect(link, `${social.label} on ${route}`).toBeVisible()
+            if (social.id !== "email") {
+                await expect(link).toHaveAttribute("target", "_blank")
+                await expect(link).toHaveAttribute("rel", /noopener/)
+                await expect(link).toHaveAttribute("rel", /noreferrer/)
+            }
+        }
+    }
+
+    expect(getAvailableCreatorSocialLinks([])).toEqual([])
+    expect(
+        getAvailableCreatorSocialLinks([
+            null,
+            undefined,
+            { id: "github", label: "", url: "" },
+            creatorSocialLinks[0]
+        ])
+    ).toEqual([creatorSocialLinks[0]])
+})
+
+test("creator and article author structured data identify the same person", async ({
+    page
+}) => {
+    await page.goto("/en/health/osteochondrodysplasia")
+    await waitForLoadingScreen(page)
+    const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .allTextContents()
+    const parsedSchemas = schemas.map((schema) => JSON.parse(schema))
+    const graph = parsedSchemas.find((schema) =>
+        Array.isArray(schema["@graph"])
+    )
+    const person = graph?.["@graph"].find(
+        (entry: Record<string, unknown>) => entry["@type"] === "Person"
+    )
+    const article = parsedSchemas.find(
+        (schema) => schema["@type"] === "Article"
+    )
+
+    expect(person?.name).toBe(creatorProfile.name)
+    expect(person?.sameAs).toContain(creatorProfile.github.url)
+    expect(article?.author?.name).toBe(creatorProfile.name)
+    expect(article?.author?.["@id"]).toBe(person?.["@id"])
+    await expect(page.getByText(creatorProfile.name).first()).toBeVisible()
 })
 
 test("invalid health slugs use the branded error experience", async ({

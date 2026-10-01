@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { isLanguageCode } from "~/utils/languages"
 import { licensedScottishFoldPhotos } from "~/data/cats"
+import { creatorProfile } from "~/data/creatorProfile"
 
 definePageMeta({ validate: (route) => isLanguageCode(route.params.locale) })
 const { languageCode } = useCurrentLanguage()
@@ -105,7 +106,10 @@ const pageText = computed(() => {
             ruleTitle: "قاعدة التحرير",
             ruleCopy:
                 "أي ادعاء صحي عن Scottish Fold يجب أن يرتبط بمصدر بيطري أو علمي عندما يكون ذلك ممكناً. تجربة لوتس تُعرض كتجربة شخصية وليست كحقيقة طبية عامة.",
-            review: "تاريخ مراجعة المحتوى الحالي: 28 سبتمبر 2026."
+            review: "تاريخ مراجعة المحتوى الحالي: 28 سبتمبر 2026.",
+            curatorTitle: "من يراجع محتوى FelisFold؟",
+            curatorCopy:
+                "يبحث مارك في كل موضوع ويحرره، مع إبقاء تجربة لوتس منفصلة بوضوح عن الأدلة البيطرية العامة."
         }
     if (languageCode.value === "fr")
         return {
@@ -115,7 +119,9 @@ const pageText = computed(() => {
             ruleTitle: "Règle éditoriale",
             ruleCopy:
                 "Une affirmation sur la santé du Scottish Fold doit être reliée à une source vétérinaire ou scientifique lorsque c'est possible. L'expérience de Lotus est présentée comme une expérience personnelle, pas comme une vérité médicale universelle.",
-            review: "Date de révision du contenu actuel : 28 septembre 2026."
+            review: "Date de révision du contenu actuel : 28 septembre 2026.",
+            curatorTitle: "Qui organise le contenu de FelisFold ?",
+            curatorCopy: `${creatorProfile.name} recherche et édite chaque sujet, en gardant l'expérience de Lotus clairement séparée des données vétérinaires générales.`
         }
     if (languageCode.value === "zh")
         return {
@@ -125,7 +131,9 @@ const pageText = computed(() => {
             ruleTitle: "编辑规则",
             ruleCopy:
                 "关于苏格兰折耳猫健康的主张，应尽可能连接到兽医或科学来源。Lotus 的经历明确标为个人经历，不会包装成普遍医学事实。",
-            review: "当前内容审核日期：2026 年 9 月 28 日。"
+            review: "当前内容审核日期：2026 年 9 月 28 日。",
+            curatorTitle: "谁在整理 FelisFold 的内容？",
+            curatorCopy: `${creatorProfile.name} 研究并编辑每个主题，同时始终把 Lotus 的个人经历与通用兽医证据清楚分开。`
         }
     return {
         eyebrow: "Evidence shelf",
@@ -134,7 +142,9 @@ const pageText = computed(() => {
         ruleTitle: "Editorial rule",
         ruleCopy:
             "A claim about Scottish Fold health should be connected to a veterinary or peer-reviewed source when possible. Lotus's personal experience is labelled as personal experience, not turned into a universal medical claim.",
-        review: "Current content review date: 28 September 2026."
+        review: "Current content review date: 28 September 2026.",
+        curatorTitle: "Who curates FelisFold?",
+        curatorCopy: `${creatorProfile.name} researches and edits each topic, keeping Lotus's experience clearly separate from broader veterinary evidence.`
     }
 })
 
@@ -188,6 +198,19 @@ usePageSeo({
                 </ul>
             </section>
         </div>
+
+        <section class="mt-10" aria-labelledby="curator-title">
+            <h2 id="curator-title" class="font-editorial text-ink text-3xl">
+                {{ pageText.curatorTitle }}
+            </h2>
+            <p class="text-muted mt-3 max-w-3xl leading-7">
+                {{ pageText.curatorCopy }}
+            </p>
+            <CreatorMiniProfile class="mt-6" />
+            <p class="text-muted mt-5 max-w-3xl text-sm leading-6">
+                {{ creatorProfile.notVeterinarian[languageCode] }}
+            </p>
+        </section>
 
         <section
             class="border-border bg-paper mt-10 rounded-[2rem] border p-6 sm:p-8"

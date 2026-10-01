@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { creatorPersonStructuredData } from "~/data/creatorProfile"
+
 const runtimeConfig = useRuntimeConfig()
 useHead({
     script: [
@@ -7,11 +9,17 @@ useHead({
             innerHTML: JSON.stringify({
                 "@context": "https://schema.org",
                 "@graph": [
+                    creatorPersonStructuredData(
+                        String(runtimeConfig.public.siteUrl)
+                    ),
                     {
                         "@type": "Organization",
                         name: "FelisFold",
                         url: runtimeConfig.public.siteUrl,
-                        slogan: "Born from Lotus. For every Fold."
+                        slogan: "Born from Lotus. For every Fold.",
+                        founder: {
+                            "@id": `${String(runtimeConfig.public.siteUrl).replace(/\/$/, "")}/#creator`
+                        }
                     },
                     {
                         "@type": "WebSite",

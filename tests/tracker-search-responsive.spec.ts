@@ -312,6 +312,7 @@ test("main routes avoid horizontal overflow at common widths", async ({
         "/en/resources",
         "/en/care",
         "/en/about",
+        "/en/contact",
         "/en/sources",
         "/ar"
     ]

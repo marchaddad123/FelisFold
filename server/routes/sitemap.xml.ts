@@ -19,6 +19,7 @@ const pagePaths = [
     "/sources",
     "/resources",
     "/about",
+    "/contact",
     "/search"
 ]
 

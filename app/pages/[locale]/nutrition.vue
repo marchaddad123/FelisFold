@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { isLanguageCode } from "~/utils/languages"
 import { feedingSchedule, nutritionTopics } from "~/data/nutritionTopics"
+import { lotusNutritionExperience } from "~/data/lotusStory"
 
 definePageMeta({ validate: (route) => isLanguageCode(route.params.locale) })
 const { languageCode } = useCurrentLanguage()
@@ -259,18 +260,7 @@ usePageSeo({
                     placeholder
                     class="aspect-[4/3] w-full rounded-[48%_48%_8%_8%] object-cover object-[center_58%]"
                 />
-                <div class="bg-[#fffaf1] p-5 text-[#18231f] shadow-xl">
-                    <p class="font-handwritten text-lg">
-                        Real progress can look like:
-                    </p>
-                    <ul class="mt-4 space-y-3 text-sm text-[#5f625c]">
-                        <li>✓ Fewer vomiting episodes</li>
-                        <li>✓ Calmer, measured eating</li>
-                        <li>✓ Better hydration</li>
-                        <li>✓ More consistent stool</li>
-                        <li>✓ A brighter, playful Lotus</li>
-                    </ul>
-                </div>
+                <LotusExperiencePanel :content="lotusNutritionExperience" />
             </div>
         </section>
 
@@ -463,6 +453,9 @@ usePageSeo({
                 placeholder
                 class="aspect-square w-full rounded-[48%_48%_8%_8%] object-cover object-[center_30%]"
             />
+        </section>
+        <section class="paper-texture px-4 py-10 sm:px-6">
+            <CreatorMiniProfile class="mx-auto max-w-[90rem]" />
         </section>
         <TrustStrip />
     </div>

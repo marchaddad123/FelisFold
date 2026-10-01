@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { siteText, textForLanguage } from "~/data/siteText"
+import { creatorProfile } from "~/data/creatorProfile"
 
 const { languageCode } = useCurrentLanguage()
 const { localizedPath } = useLocalizedPath()
@@ -58,6 +59,13 @@ const footerGroups = computed(() => [
             ],
             [
                 textForLanguage(
+                    siteText.navigation.contact,
+                    languageCode.value
+                ),
+                "/contact"
+            ],
+            [
+                textForLanguage(
                     siteText.navigation.sources,
                     languageCode.value
                 ),
@@ -77,7 +85,7 @@ const footerGroups = computed(() => [
         <NewsletterBand />
         <div class="bg-[#08251f] px-4 py-10 text-[#d9e5df] sm:px-6 lg:px-8">
             <div
-                class="mx-auto grid max-w-[90rem] gap-10 md:grid-cols-[1.4fr_1fr_1fr]"
+                class="mx-auto grid max-w-[90rem] gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.8fr_1fr]"
             >
                 <div>
                     <BrandLogo inverse />
@@ -112,6 +120,23 @@ const footerGroups = computed(() => [
                         </li>
                     </ul>
                 </nav>
+                <section aria-labelledby="footer-creator-title">
+                    <h2
+                        id="footer-creator-title"
+                        class="text-sm font-bold text-[#fffaf1]"
+                    >
+                        {{ creatorProfile.role[languageCode] }}
+                    </h2>
+                    <p class="mt-4 font-semibold text-[#fffaf1]">
+                        {{ creatorProfile.name }}
+                    </p>
+                    <p class="mt-1 text-sm text-[#9fb4aa]">
+                        {{ creatorProfile.onlineName }} ·
+                        {{ creatorProfile.relationshipToLotus[languageCode] }} ·
+                        {{ creatorProfile.location[languageCode] }}
+                    </p>
+                    <CreatorSocialLinks class="mt-4" variant="icons" />
+                </section>
             </div>
         </div>
     </footer>

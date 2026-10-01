@@ -1,5 +1,15 @@
 <script setup lang="ts">
-defineProps<{ eyebrow: string; title: string; copy: string }>()
+defineProps<{
+    eyebrow: string
+    title: string
+    subtitle: string
+    copy: string
+    storyButton: string
+    healthButton: string
+    note: string
+    paperNote: string
+    imageAlt: string
+}>()
 const { localizedPath } = useLocalizedPath()
 </script>
 
@@ -20,9 +30,9 @@ const { localizedPath } = useLocalizedPath()
                     class="font-editorial text-ink mt-3 text-5xl leading-[0.94] tracking-[-0.05em] sm:text-6xl lg:text-7xl"
                 >
                     {{ title }}
-                    <span class="block text-3xl sm:text-4xl lg:text-5xl"
-                        >A little cat with a big story.</span
-                    >
+                    <span class="block text-3xl sm:text-4xl lg:text-5xl">{{
+                        subtitle
+                    }}</span>
                 </h1>
                 <p class="text-muted mt-5 max-w-xl text-lg leading-8">
                     {{ copy }}
@@ -31,11 +41,13 @@ const { localizedPath } = useLocalizedPath()
                     <a
                         href="#lotus-story"
                         class="bg-peach text-on-accent inline-flex min-h-12 items-center rounded-full px-6 font-bold"
-                        >Our story <span class="ms-3">🐾</span></a
+                        >{{ storyButton }}
+                        <span class="ms-3" aria-hidden="true">🐾</span></a
                     ><NuxtLink
                         :to="localizedPath('/health')"
                         class="editorial-link text-ink inline-flex min-h-12 items-center px-2 font-semibold"
-                        >Explore health guides →</NuxtLink
+                        >{{ healthButton }}
+                        <span class="ms-2" aria-hidden="true">→</span></NuxtLink
                     >
                 </div>
             </div>
@@ -44,7 +56,7 @@ const { localizedPath } = useLocalizedPath()
             >
                 <NuxtImg
                     src="/images/lotus/lotus-portrait.jpg"
-                    alt="Lotus, the Scottish Fold mix behind FelisFold"
+                    :alt="imageAlt"
                     width="1536"
                     height="1536"
                     sizes="100vw lg:60vw"
@@ -54,12 +66,12 @@ const { localizedPath } = useLocalizedPath()
                     fetchpriority="high"
                     class="absolute inset-0 size-full object-cover object-[center_40%]"
                 /><HandwrittenNote
-                    text="Lotus — our why"
+                    :text="note"
                     rotate="left"
                     tone="light"
                     class="absolute start-6 top-7 drop-shadow-lg"
                 /><HandwrittenNote
-                    text="Same gentle soul. Always my boy."
+                    :text="paperNote"
                     rotate="right"
                     tone="paper"
                     class="absolute end-5 bottom-7 max-w-40 bg-[#fffaf1]/88 p-3 shadow-lg"

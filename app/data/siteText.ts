@@ -31,6 +31,7 @@ export const siteText = {
             zh: "资料来源"
         },
         about: { en: "About", ar: "عن الموقع", fr: "À propos", zh: "关于" },
+        contact: { en: "Contact", ar: "تواصل", fr: "Contact", zh: "联系" },
         search: { en: "Search", ar: "بحث", fr: "Recherche", zh: "搜索" },
         emergency: {
             en: "Vet red flags",

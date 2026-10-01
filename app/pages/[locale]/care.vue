@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { isLanguageCode } from "~/utils/languages"
+import { lotusCareExperience } from "~/data/lotusStory"
 
 definePageMeta({ validate: (route) => isLanguageCode(route.params.locale) })
 const { languageCode } = useCurrentLanguage()
@@ -213,5 +214,6 @@ usePageSeo({
                 <MedicalInformationNotice class="mt-5" />
             </div>
         </section>
+        <LotusExperiencePanel class="mt-8" :content="lotusCareExperience" />
     </div>
 </template>

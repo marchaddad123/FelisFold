@@ -25,6 +25,7 @@ usePageSeo({
         <HomePrinciplesSection />
         <HomeHealthPreviewSection />
         <HomeLotusStorySection />
+        <CreatorIntroductionSection />
         <HomeCareTopicsSection />
         <HomeLifeCollageSection />
         <TrustStrip />

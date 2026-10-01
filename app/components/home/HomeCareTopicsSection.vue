@@ -30,6 +30,7 @@ const topics = [
 
 <template>
     <section
+        id="home-care-topics"
         class="bg-paper paper-texture relative overflow-hidden px-4 pt-14 sm:px-6 sm:pt-20 lg:px-8"
     >
         <div

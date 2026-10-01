@@ -18,6 +18,7 @@ const expectedPagePaths = [
     "/sources",
     "/resources",
     "/about",
+    "/contact",
     "/search"
 ]
 const expectedHealthSlugs = [
@@ -41,6 +42,8 @@ const corePaths = [
     "/en/lotus",
     "/en/tracker",
     "/en/resources",
+    "/en/about",
+    "/en/contact",
     "/en/search",
     "/ar"
 ]

@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises"
 
 const sourceFiles = [
     "app/data/healthTopics.ts",
+    "app/data/creatorProfile.ts",
     "app/pages/[locale]/sources.vue",
     "app/pages/[locale]/resources.vue"
 ]
@@ -9,7 +10,8 @@ const knownBotProtectedUrls = new Set([
     "https://journals.sagepub.com/doi/10.1177/1098612X241241951",
     "https://vgl.ucdavis.edu/",
     "https://vgl.ucdavis.edu/test/pkd1-cat",
-    "https://vgl.ucdavis.edu/test/scottish-fold"
+    "https://vgl.ucdavis.edu/test/scottish-fold",
+    "https://www.linkedin.com/in/marc-haddad-bb074b220/"
 ])
 
 const sourceText = (
@@ -33,7 +35,8 @@ const results = await Promise.all(
                 status: response.status,
                 ok:
                     response.ok ||
-                    (response.status === 403 && knownBotProtectedUrls.has(url))
+                    ([403, 999].includes(response.status) &&
+                        knownBotProtectedUrls.has(url))
             }
         } catch (error) {
             return {

@@ -3,7 +3,10 @@ const { localizedPath } = useLocalizedPath()
 </script>
 
 <template>
-    <section class="paper-texture px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+    <section
+        id="lotus-home-story"
+        class="paper-texture px-4 py-14 sm:px-6 sm:py-20 lg:px-8"
+    >
         <div class="mx-auto max-w-[90rem]">
             <div class="grid lg:grid-cols-2">
                 <article

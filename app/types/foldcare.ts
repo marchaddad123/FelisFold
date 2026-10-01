@@ -56,6 +56,67 @@ export type CatProfile = {
     isLotus: boolean
 }
 
+export type LotusMediaSelection =
+    "use" | "keep-for-later" | "do-not-use-publicly"
+
+export type LotusMediaAvailability = "ready" | "awaiting-original"
+
+type LotusMediaBase = {
+    id: string
+    type: "photo" | "video"
+    availability: LotusMediaAvailability
+    selection: LotusMediaSelection
+    posterPath?: string
+    date?: string
+    approximateDate?: boolean
+    ageLabel?: LocalizedText
+    title: LocalizedText
+    caption: LocalizedText
+    altText: LocalizedText
+    storyContext?: LocalizedText
+    healthContext?: LocalizedText
+    peopleVisible: boolean
+    ownerVisible?: boolean
+    requiresPublicationApproval: boolean
+    featured?: boolean
+    mobileObjectPosition?: string
+    desktopObjectPosition?: string
+}
+
+export type ReadyLotusMediaItem = LotusMediaBase & {
+    availability: "ready"
+    sourcePath: string
+    width: number
+    height: number
+}
+
+export type PendingLotusMediaItem = LotusMediaBase & {
+    availability: "awaiting-original"
+    sourcePath: null
+    width: null
+    height: null
+    originalReference: string
+}
+
+export type LotusMediaItem = ReadyLotusMediaItem | PendingLotusMediaItem
+
+export type LotusTimelineItem = {
+    id: string
+    dateLabel: LocalizedText
+    title: LocalizedText
+    copy: LocalizedText
+    mediaId?: string
+}
+
+export type LotusExperienceContent = {
+    eyebrow: LocalizedText
+    title: LocalizedText
+    copy: LocalizedText
+    bullets?: Record<LanguageCode, string[]>
+    note?: LocalizedText
+    tone?: "plain" | "lilac" | "sage" | "peach" | "sky" | "warning"
+}
+
 export type TrackerEntryType =
     | "meal"
     | "water"

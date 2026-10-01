@@ -70,6 +70,32 @@ test("language switch keeps the current page and enables RTL", async ({
     await expect(page).toHaveURL(/\/en\/health$/)
 })
 
+test("Lotus story keeps confirmed dates, honest uncertainty and approved media", async ({
+    page
+}) => {
+    await page.goto("/en/lotus")
+    await expect(page.getByRole("status")).toBeHidden({ timeout: 15_000 })
+
+    await expect(page.getByText("June 2021", { exact: true })).toHaveCount(2)
+    await expect(page.getByText("2020", { exact: true })).toHaveCount(0)
+
+    const timeline = page.getByTestId("lotus-story-timeline")
+    await expect(timeline.getByRole("listitem")).toHaveCount(10)
+
+    const imageSources = await page
+        .locator("main img")
+        .evaluateAll((images) =>
+            images.map((image) => image.getAttribute("src") ?? "")
+        )
+    expect(imageSources.some((source) => source.includes("incoming-"))).toBe(
+        false
+    )
+
+    await page.goto("/ar/lotus")
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl")
+    await expect(page.getByText("يونيو 2021", { exact: true })).toHaveCount(2)
+})
+
 test("route navigation resets scroll and the logo returns home", async ({
     page
 }) => {

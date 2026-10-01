@@ -339,42 +339,7 @@ useHead({
         </section>
 
         <section class="bg-cream paper-texture px-4 py-12 sm:px-6">
-            <div
-                class="mx-auto grid max-w-[90rem] gap-8 lg:grid-cols-[0.7fr_1fr_0.5fr] lg:items-center"
-            >
-                <NuxtImg
-                    src="/images/lotus/lotus-with-creator-younger.jpg"
-                    alt="Lotus with his owner"
-                    width="1152"
-                    height="1536"
-                    sizes="100vw lg:32vw"
-                    format="webp"
-                    :quality="82"
-                    loading="lazy"
-                    decoding="async"
-                    placeholder
-                    class="aspect-[4/3] w-full object-cover object-[center_38%]"
-                />
-                <div>
-                    <p
-                        class="text-peach text-xs font-bold tracking-[0.18em] uppercase"
-                    >
-                        A note from Lotus's human
-                    </p>
-                    <h2 class="font-editorial text-ink mt-2 text-4xl">
-                        We're in this together.
-                    </h2>
-                    <p class="text-muted mt-4 leading-7">
-                        This page grew from real conversations, real uncertainty
-                        and a wish to help other Scottish Fold families feel
-                        better prepared—never more frightened.
-                    </p>
-                </div>
-                <HandwrittenNote
-                    text="More knowledge. More compassion. Happier days."
-                    rotate="right"
-                />
-            </div>
+            <CreatorMiniProfile class="mx-auto max-w-[90rem]" />
         </section>
         <TrustStrip />
     </div>
