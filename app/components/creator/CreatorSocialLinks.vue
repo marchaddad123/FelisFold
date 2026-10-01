@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { translated } from "~/data/editorialHelpers"
 import {
     creatorSocialLinks,
     getAvailableCreatorSocialLinks,
@@ -14,6 +15,23 @@ const props = withDefaults(
 )
 
 const { languageCode } = useCurrentLanguage()
+const linksLabel = translated(
+    "Creator links",
+    "روابط صاحب الموقع",
+    "Liens du créateur",
+    "创作者链接"
+)
+function linkLabel(link: CreatorSocialLink) {
+    if (link.id === "email")
+        return translated("Email", "البريد الإلكتروني", "E-mail", "电子邮件")[
+            languageCode.value
+        ]
+    if (link.id === "portfolio")
+        return translated("Portfolio", "معرض الأعمال", "Portfolio", "作品集")[
+            languageCode.value
+        ]
+    return link.label
+}
 const availableLinks = computed(() =>
     getAvailableCreatorSocialLinks(props.links ?? creatorSocialLinks)
 )
@@ -41,15 +59,15 @@ function linkDetail(link: CreatorSocialLink): string {
         v-if="availableLinks.length"
         class="flex flex-wrap"
         :class="variant === 'full' ? 'grid gap-3 sm:grid-cols-2' : 'gap-2'"
-        aria-label="Creator links"
+        :aria-label="linksLabel[languageCode]"
     >
         <li v-for="link in availableLinks" :key="link.id">
             <a
                 :href="link.url"
                 :target="link.id === 'email' ? undefined : '_blank'"
                 :rel="link.id === 'email' ? undefined : 'noopener noreferrer'"
-                :aria-label="`${link.label}: ${linkDetail(link)}`"
-                :title="`${link.label}: ${linkDetail(link)}`"
+                :aria-label="`${linkLabel(link)}: ${linkDetail(link)}`"
+                :title="`${linkLabel(link)}: ${linkDetail(link)}`"
                 class="focus-visible:outline-lilac transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                 :class="{
                     'border-border hover:border-peach hover:text-peach grid size-11 place-items-center rounded-full border':
@@ -65,9 +83,13 @@ function linkDetail(link: CreatorSocialLink): string {
                     :social-id="link.id"
                 />
                 <template v-if="variant !== 'icons'">
-                    <span v-if="variant === 'compact'">{{ link.label }}</span>
+                    <span v-if="variant === 'compact'">{{
+                        linkLabel(link)
+                    }}</span>
                     <span v-else class="min-w-0">
-                        <strong class="block text-sm">{{ link.label }}</strong>
+                        <strong class="block text-sm">{{
+                            linkLabel(link)
+                        }}</strong>
                         <span class="text-muted block truncate text-xs">{{
                             linkDetail(link)
                         }}</span>

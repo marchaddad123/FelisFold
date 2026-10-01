@@ -1,4 +1,5 @@
 import type { HealthTopic, LanguageCode, LocalizedText } from "~/types/foldcare"
+import { structureHealthGuide } from "~/data/healthGuideStructure"
 
 const localizedText = (
     en: string,
@@ -14,25 +15,7 @@ const localizedParagraphs = (
     zh: string[]
 ): Record<LanguageCode, string[]> => ({ en, ar, fr, zh })
 
-const localizedBullets = (
-    en: string[],
-    ar: string[],
-    fr: string[],
-    zh: string[]
-): Record<LanguageCode, string[]> => ({ en, ar, fr, zh })
-
-export const healthTopicGroups: Record<string, string[]> = {
-    mobility: [
-        "osteochondrodysplasia",
-        "pain-and-mobility",
-        "weight-and-quality-of-life"
-    ],
-    digestion: ["vomiting", "ears-and-grooming", "weight-and-quality-of-life"],
-    daily: ["ears-and-grooming", "weight-and-quality-of-life", "heart-health"],
-    vet: ["pkd", "heart-health", "when-to-call-a-vet"]
-}
-
-export const healthTopics: HealthTopic[] = [
+const originalHealthTopics: HealthTopic[] = [
     {
         slug: "osteochondrodysplasia",
         icon: "🦴",
@@ -88,63 +71,6 @@ export const healthTopics: HealthTopic[] = [
                     ]
                 ),
                 tone: "lilac"
-            },
-            {
-                heading: localizedText(
-                    "Signs owners may notice",
-                    "علامات قد يلاحظها المالك",
-                    "Signes que l'on peut remarquer",
-                    "主人可能注意到的迹象"
-                ),
-                paragraphs: localizedParagraphs(
-                    [
-                        "Cats often hide chronic pain, so changes at home can matter more than dramatic limping."
-                    ],
-                    [
-                        "القطط غالباً ما تخفي الألم المزمن، لذلك قد تكون التغيّرات اليومية في المنزل أهم من العرج الواضح."
-                    ],
-                    [
-                        "Les chats cachent souvent la douleur chronique. Les petits changements à la maison peuvent donc être plus utiles qu'une boiterie spectaculaire."
-                    ],
-                    [
-                        "猫很会隐藏慢性疼痛，因此家里的细小行为变化有时比明显跛行更重要。"
-                    ]
-                ),
-                bullets: localizedBullets(
-                    [
-                        "Less jumping or hesitation before jumping",
-                        "Using chairs, boxes or furniture as intermediate steps",
-                        "Stiffness after rest or shorter strides",
-                        "Discomfort when paws, legs, hips or tail are handled",
-                        "A thick, rigid or painful tail",
-                        "Less play, climbing or grooming"
-                    ],
-                    [
-                        "قفز أقل أو تردد قبل القفز",
-                        "استخدام الكراسي أو الأثاث كخطوات وسيطة",
-                        "تيبّس بعد الراحة أو خطوات أقصر",
-                        "انزعاج عند لمس الأقدام أو الأرجل أو الوركين أو الذيل",
-                        "ذيل سميك أو قاسٍ أو مؤلم",
-                        "لعب أو تسلق أو تنظيف ذاتي أقل"
-                    ],
-                    [
-                        "Moins de sauts ou hésitation avant de sauter",
-                        "Utilisation de meubles comme étapes intermédiaires",
-                        "Raideur après le repos ou pas plus courts",
-                        "Inconfort lorsqu'on touche les pattes, les hanches ou la queue",
-                        "Queue épaisse, rigide ou douloureuse",
-                        "Moins de jeu, d'escalade ou de toilettage"
-                    ],
-                    [
-                        "跳跃减少或跳之前犹豫",
-                        "用椅子、箱子或家具分段上去",
-                        "休息后僵硬或步幅变短",
-                        "触碰爪子、腿、髋部或尾巴时不舒服",
-                        "尾巴粗、僵硬或疼痛",
-                        "玩耍、攀爬或梳理毛发减少"
-                    ]
-                ),
-                tone: "sage"
             },
             {
                 heading: localizedText(
@@ -258,29 +184,6 @@ export const healthTopics: HealthTopic[] = [
             },
             {
                 heading: localizedText(
-                    "Make the home easier",
-                    "اجعل المنزل أسهل",
-                    "Rendre la maison plus facile",
-                    "让家里更容易活动"
-                ),
-                paragraphs: localizedParagraphs(
-                    [
-                        "Use stable intermediate steps or ramps, non-slip surfaces, a low-entry litter box, and comfortable resting places. The goal is not to stop movement; it is to reduce painful effort."
-                    ],
-                    [
-                        "استخدم خطوات ثابتة أو منحدرات، وأس surfaces غير زلقة، وصندوق رمل بمدخل منخفض، وأماكن راحة مريحة. الهدف ليس منع الحركة بل تقليل الجهد المؤلم."
-                    ],
-                    [
-                        "Utilisez des marches stables ou des rampes, des surfaces antidérapantes, un bac à litière bas et des zones de repos confortables. Le but n'est pas d'empêcher le mouvement, mais de réduire l'effort douloureux."
-                    ],
-                    [
-                        "可以使用稳固的小台阶或坡道、防滑地面、低入口猫砂盆和舒适的休息位置。目标不是让猫不动，而是减少疼痛的用力。"
-                    ]
-                ),
-                tone: "sage"
-            },
-            {
-                heading: localizedText(
                     "Pain treatment is individual",
                     "علاج الألم فردي",
                     "Le traitement de la douleur est individuel",
@@ -366,81 +269,6 @@ export const healthTopics: HealthTopic[] = [
                     ]
                 ),
                 tone: "sky"
-            },
-            {
-                heading: localizedText(
-                    "Frequent vomiting is not automatically a hairball problem",
-                    "القيء المتكرر ليس تلقائياً مشكلة كرات شعر",
-                    "Des vomissements fréquents ne sont pas automatiquement des boules de poils",
-                    "频繁呕吐不能自动归因于毛球"
-                ),
-                paragraphs: localizedParagraphs(
-                    [
-                        "Hair can trigger vomiting, but repeated vomiting can also occur with intestinal inflammation, food-responsive disease, parasites, pancreatitis, metabolic disease, obstruction and other conditions. Cornell advises veterinary evaluation when vomiting happens more than about once a week or comes with other concerning signs."
-                    ],
-                    [
-                        "قد يسبب الشعر القيء، لكن التكرار قد يحدث أيضاً بسبب التهاب الأمعاء أو مشاكل مرتبطة بالغذاء أو الطفيليات أو التهاب البنكرياس أو أمراض استقلابية أو انسداد وغيرها. توصي Cornell بالتقييم البيطري عندما يتكرر القيء أكثر من نحو مرة أسبوعياً أو ترافقه علامات مقلقة."
-                    ],
-                    [
-                        "Les poils peuvent provoquer des vomissements, mais des épisodes répétés peuvent aussi être liés à une inflammation intestinale, une maladie répondant à l'alimentation, des parasites, une pancréatite, une maladie métabolique, une obstruction ou autre. Cornell conseille une évaluation vétérinaire lorsque les vomissements dépassent environ une fois par semaine ou s'accompagnent d'autres signes inquiétants."
-                    ],
-                    [
-                        "毛发确实会引起呕吐，但反复呕吐也可能与肠道炎症、食物相关疾病、寄生虫、胰腺炎、代谢性疾病、梗阻等有关。Cornell 建议，如果呕吐频率超过大约每周一次，或伴有其他异常，应让兽医评估。"
-                    ]
-                ),
-                tone: "peach"
-            },
-            {
-                heading: localizedText(
-                    "What to record",
-                    "ماذا تسجّل؟",
-                    "Quoi noter ?",
-                    "应该记录什么？"
-                ),
-                paragraphs: localizedParagraphs(
-                    [
-                        "A short video of an episode can help distinguish vomiting from regurgitation. A simple log can reveal patterns that are hard to remember."
-                    ],
-                    [
-                        "قد يساعد فيديو قصير للحادثة على التفريق بين القيء والارتجاع. وسجل بسيط قد يكشف أنماطاً يصعب تذكرها."
-                    ],
-                    [
-                        "Une courte vidéo d'un épisode peut aider à distinguer vomissement et régurgitation. Un journal simple peut révéler des tendances difficiles à mémoriser."
-                    ],
-                    [
-                        "拍一小段发作视频有助于区分呕吐和反流。简单日志也能发现平时很难靠记忆看出的规律。"
-                    ]
-                ),
-                bullets: localizedBullets(
-                    [
-                        "Time since the last meal",
-                        "Portion size and eating speed",
-                        "Food, foam, bile, hair or blood",
-                        "Body-weight or appetite changes",
-                        "Stool and hydration changes"
-                    ],
-                    [
-                        "الوقت منذ آخر وجبة",
-                        "حجم الوجبة وسرعة الأكل",
-                        "طعام أو رغوة أو صفرا أو شعر أو دم",
-                        "تغيّر الوزن أو الشهية",
-                        "تغيّر البراز أو الترطيب"
-                    ],
-                    [
-                        "Temps depuis le dernier repas",
-                        "Taille de portion et vitesse d'ingestion",
-                        "Aliments, mousse, bile, poils ou sang",
-                        "Changements de poids ou d'appétit",
-                        "Changements des selles ou de l'hydratation"
-                    ],
-                    [
-                        "距离上次进食的时间",
-                        "份量和进食速度",
-                        "食物、泡沫、胆汁、毛发或血",
-                        "体重或食欲变化",
-                        "排便和饮水变化"
-                    ]
-                )
             }
         ],
         sources: [
@@ -650,29 +478,6 @@ export const healthTopics: HealthTopic[] = [
                     ]
                 ),
                 tone: "lilac"
-            },
-            {
-                heading: localizedText(
-                    "Brush more, swallow less",
-                    "تمشيط أكثر، شعر مبتلع أقل",
-                    "Plus de brossage, moins de poils avalés",
-                    "多梳毛，少吞毛"
-                ),
-                paragraphs: localizedParagraphs(
-                    [
-                        "Regular brushing removes loose fur before it is swallowed during grooming. That can reduce hairball load, but repeated vomiting still deserves its own investigation rather than being blamed on hair alone."
-                    ],
-                    [
-                        "التمشيط المنتظم يزيل الشعر المتساقط قبل أن يبتلعه القط أثناء تنظيف نفسه. قد يقلل ذلك من كرات الشعر، لكن القيء المتكرر يحتاج تقييماً مستقلاً ولا يجب إلقاء اللوم على الشعر وحده."
-                    ],
-                    [
-                        "Le brossage régulier enlève les poils morts avant qu'ils ne soient avalés. Cela peut réduire les boules de poils, mais des vomissements répétés nécessitent toujours leur propre évaluation."
-                    ],
-                    [
-                        "规律梳毛可以在猫咪舔进去之前去掉松散毛发，有助于减少毛球负担。但反复呕吐仍应单独调查，不能只归因于毛发。"
-                    ]
-                ),
-                tone: "sage"
             }
         ],
         sources: [
@@ -728,28 +533,6 @@ export const healthTopics: HealthTopic[] = [
                     ]
                 ),
                 tone: "sage"
-            },
-            {
-                heading: localizedText(
-                    "Look for trends, not one bad day",
-                    "راقب الاتجاه لا يوماً سيئاً واحداً",
-                    "Observer la tendance, pas une mauvaise journée",
-                    "看趋势，不看单独一天"
-                ),
-                paragraphs: localizedParagraphs(
-                    [
-                        "Track jumping, play, grooming, appetite, litter-box use, social contact and willingness to be touched. A gradual change across weeks can be more useful than a single snapshot."
-                    ],
-                    [
-                        "راقب القفز واللعب والتنظيف والشهية وصندوق الرمل والتواصل الاجتماعي ومدى تقبل اللمس. التغيّر التدريجي عبر أسابيع قد يكون أهم من يوم واحد."
-                    ],
-                    [
-                        "Suivez les sauts, le jeu, le toilettage, l'appétit, la litière, les contacts sociaux et la tolérance au toucher. Une évolution sur plusieurs semaines est souvent plus informative qu'une seule journée."
-                    ],
-                    [
-                        "记录跳跃、玩耍、梳理、食欲、猫砂盆使用、社交以及是否愿意被触碰。几周内的趋势通常比某一天更有价值。"
-                    ]
-                )
             }
         ],
         sources: [
@@ -811,28 +594,6 @@ export const healthTopics: HealthTopic[] = [
                     ]
                 ),
                 tone: "warning"
-            },
-            {
-                heading: localizedText(
-                    "Book an appointment promptly",
-                    "احجز موعداً قريباً",
-                    "Prendre rendez-vous rapidement",
-                    "尽快预约兽医"
-                ),
-                paragraphs: localizedParagraphs(
-                    [
-                        "Recurrent vomiting, gradual loss of jumping ability, stiffness, pain when handled, a rigid tail, weight loss despite appetite, or a meaningful change in normal behaviour deserve investigation even when the cat still has energetic moments."
-                    ],
-                    [
-                        "القيء المتكرر، فقدان القدرة على القفز تدريجياً، التيبس، الألم عند الحمل أو اللمس، ذيل قاسٍ، فقدان الوزن رغم الشهية، أو تغير واضح في السلوك تستحق الفحص حتى لو كان القط نشيطاً أحياناً."
-                    ],
-                    [
-                        "Des vomissements récurrents, une diminution progressive des sauts, de la raideur, une douleur au toucher, une queue rigide, une perte de poids malgré l'appétit ou un changement net de comportement méritent une consultation même si le chat reste parfois énergique."
-                    ],
-                    [
-                        "反复呕吐、逐渐不愿跳、僵硬、触碰时疼痛、尾巴僵硬、明明有食欲却体重下降，或日常行为明显改变，都值得检查，即使猫有时看起来还很有精神。"
-                    ]
-                )
             }
         ],
         sources: [
@@ -853,3 +614,5 @@ export const healthTopics: HealthTopic[] = [
 export function findHealthTopic(slug: string): HealthTopic | undefined {
     return healthTopics.find((topic) => topic.slug === slug)
 }
+
+export const healthTopics = originalHealthTopics.map(structureHealthGuide)

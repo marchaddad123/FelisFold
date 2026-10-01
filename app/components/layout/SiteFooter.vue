@@ -31,11 +31,8 @@ const footerGroups = computed(() => [
                 "/nutrition"
             ],
             [
-                textForLanguage(
-                    siteText.navigation.tracker,
-                    languageCode.value
-                ),
-                "/tracker"
+                textForLanguage(siteText.navigation.care, languageCode.value),
+                "/care"
             ]
         ]
     },
@@ -69,7 +66,7 @@ const footerGroups = computed(() => [
                     siteText.navigation.sources,
                     languageCode.value
                 ),
-                "/resources"
+                "/sources"
             ],
             [
                 textForLanguage(siteText.navigation.search, languageCode.value),
@@ -82,7 +79,6 @@ const footerGroups = computed(() => [
 
 <template>
     <footer>
-        <NewsletterBand />
         <div class="bg-[#08251f] px-4 py-10 text-[#d9e5df] sm:px-6 lg:px-8">
             <div
                 class="mx-auto grid max-w-[90rem] gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.8fr_1fr]"
@@ -98,8 +94,7 @@ const footerGroups = computed(() => [
                         }}
                     </p>
                     <p class="mt-4 text-xs text-[#9fb4aa]">
-                        © {{ new Date().getFullYear() }} FelisFold. Born from
-                        Lotus. For every Fold.
+                        © {{ new Date().getFullYear() }} FelisFold.
                     </p>
                 </div>
                 <nav

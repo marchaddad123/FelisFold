@@ -117,36 +117,27 @@ export type LotusExperienceContent = {
     tone?: "plain" | "lilac" | "sage" | "peach" | "sky" | "warning"
 }
 
-export type TrackerEntryType =
-    | "meal"
-    | "water"
-    | "vomit"
-    | "litter"
-    | "appetite"
-    | "mood"
-    | "pain"
-    | "mobility"
-    | "grooming"
-    | "medicine"
-    | "weight"
-    | "note"
-
-export type TrackerEntry = {
+export type LotusKitchenEntry = {
     id: string
-    type: TrackerEntryType
-    dateTime: string
-    note: string
-    amount?: number
-    unit?: string
-    foodName?: string
-    vomitHadHair?: boolean
-    vomitHadBlood?: boolean
-    stoolQuality?: "hard" | "normal" | "soft" | "diarrhea"
-    appetiteScore?: number
-    moodScore?: number
-    painScore?: number
-    mobilityScore?: number
-    groomingScore?: number
-    medicationName?: string
-    medicationTaken?: boolean
+    date: string
+    mealName: LocalizedText
+    ingredients: LocalizedText[]
+    ingredientAmounts: { ingredientIndex: number; grams: number }[]
+    preparationMethod: LocalizedText
+    portionServed: number
+    amountEaten: number | null
+    whetherHeLikedIt: "yes" | "no" | "unclear"
+    vomitingAfter: boolean | null
+    timeToVomiting: number | null // Minutes; null means unknown or not applicable.
+    stoolObservation: LocalizedText | null
+    appetiteAfter: LocalizedText | null
+    energyAfter: LocalizedText | null
+    ownerNotes: LocalizedText
+    veterinaryNotes: LocalizedText | null
+    isCompleteDiet: boolean
+    sourceNotes: LocalizedText
+    whyITriedIt: LocalizedText
+    whatIWouldChange: LocalizedText
+    nutritionNote: LocalizedText
+    photos: { src: string; width: number; height: number; alt: LocalizedText }[]
 }

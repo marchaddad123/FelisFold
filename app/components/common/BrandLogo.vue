@@ -1,4 +1,12 @@
 <script setup lang="ts">
+import { translated } from "~/data/editorialHelpers"
+const { languageCode } = useCurrentLanguage()
+const tagline = translated(
+    "Born from Lotus. For every Fold.",
+    "من قصة لوتس، لكل قط مطوي الأذن.",
+    "Né de Lotus. Pour chaque Fold.",
+    "源于 Lotus，关爱每只折耳猫。"
+)
 withDefaults(
     defineProps<{
         compact?: boolean
@@ -36,7 +44,7 @@ withDefaults(
                         ? 'mt-2 block text-sm sm:text-base'
                         : 'mt-1 hidden text-[0.58rem] sm:block'
                 ]"
-                >Born from Lotus. For every Fold.</span
+                >{{ tagline[languageCode] }}</span
             >
         </span>
         <svg

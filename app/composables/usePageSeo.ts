@@ -1,5 +1,8 @@
 import type { ComputedRef } from "vue"
 import { supportedLanguages } from "~/utils/languages"
+import { editorialLabels, translated } from "~/data/editorialHelpers"
+import { siteText } from "~/data/siteText"
+import type { LocalizedText } from "~/types/foldcare"
 
 export function usePageSeo(options: {
     title: string | ComputedRef<string>
@@ -11,6 +14,25 @@ export function usePageSeo(options: {
     const runtimeConfig = useRuntimeConfig()
     const { languageCode } = useCurrentLanguage()
     const { samePageInLanguage } = useLocalizedPath()
+    const breadcrumbLabels: Record<string, LocalizedText> = {
+        health: editorialLabels.healthCare,
+        care: siteText.navigation.care,
+        nutrition: siteText.navigation.nutrition,
+        mixes: editorialLabels.mixes,
+        lotus: siteText.navigation.lotus,
+        sources: editorialLabels.sources,
+        about: siteText.navigation.about,
+        contact: siteText.navigation.contact,
+        search: editorialLabels.search,
+        "scottish-fold": editorialLabels.breed,
+        "start-here": editorialLabels.start,
+        homemade: translated(
+            "Homemade food",
+            "الغذاء المنزلي",
+            "Alimentation maison",
+            "自制食物"
+        )
+    }
 
     const title = computed(() => unref(options.title))
     const description = computed(() => unref(options.description))
@@ -76,7 +98,14 @@ export function usePageSeo(options: {
                             name:
                                 part === languageCode.value
                                     ? "FelisFold"
-                                    : part.replaceAll("-", " "),
+                                    : index === parts.length - 1
+                                      ? title.value.replace(
+                                            /\s*[—–-]\s*FelisFold$/,
+                                            ""
+                                        )
+                                      : (breadcrumbLabels[part]?.[
+                                            languageCode.value
+                                        ] ?? part.replaceAll("-", " ")),
                             item: new URL(
                                 `/${parts.slice(0, index + 1).join("/")}`,
                                 siteUrl.value

@@ -2,8 +2,10 @@
 import { supportedLanguages } from "~/utils/languages"
 import type { LanguageCode } from "~/types/foldcare"
 import { storageKeys } from "~/utils/storageKeys"
+import { translated } from "~/data/editorialHelpers"
 
 const { languageCode } = useCurrentLanguage()
+const label = translated("Language", "اللغة", "Langue", "语言")
 const { samePageInLanguage } = useLocalizedPath()
 const router = useRouter()
 const languageCookie = useCookie<LanguageCode>(storageKeys.language, {
@@ -26,7 +28,7 @@ async function changeLanguage(event: Event) {
 
 <template>
     <label class="relative block">
-        <span class="sr-only">Language</span>
+        <span class="sr-only">{{ label[languageCode] }}</span>
         <select
             :value="languageCode"
             class="border-border bg-paper text-ink hover:border-lilac/30 focus:border-lilac min-h-11 appearance-none rounded-full border py-2 ps-3 pe-9 text-sm font-medium shadow-sm transition outline-none"

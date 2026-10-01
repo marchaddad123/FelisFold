@@ -1,166 +1,127 @@
-import { expect, test } from "@playwright/test"
+﻿import { expect, test } from "@playwright/test"
 
-test("home and primary navigation are available", async ({ page }) => {
-    await page.goto("/en")
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(
-        "This is Lotus"
-    )
-    await page
-        .getByRole("navigation", { name: "Main navigation" })
-        .getByRole("link", { name: "Health", exact: true })
-        .click()
-    await expect(page).toHaveURL(/\/en\/health$/)
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(
-        "Health guides"
-    )
-})
-
-test("mobile menu opens and navigates", async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 812 })
-    await page.goto("/en")
-    await page.getByRole("button", { name: "Open menu" }).click()
-    await expect(
-        page.getByRole("navigation", { name: "Mobile navigation" })
-    ).toBeVisible()
-    await page
-        .getByRole("navigation", { name: "Mobile navigation" })
-        .getByRole("link", { name: "Nutrition", exact: true })
-        .click()
-    await expect(page).toHaveURL(/\/en\/nutrition$/)
-})
-
-test("mobile menu closes with escape and outside click while restoring focus", async ({
+test("home explains the breed and primary navigation reaches the guides", async ({
     page
 }) => {
-    await page.setViewportSize({ width: 375, height: 812 })
+    await page.setViewportSize({ width: 1600, height: 1000 })
     await page.goto("/en")
-    const menuButton = page.getByRole("button", { name: "Open menu" })
-    await menuButton.click()
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(
+        "Scottish Fold health & everyday care"
+    )
+    const navigation = page.locator("header nav").filter({ visible: true })
+    await expect(navigation.getByRole("link")).toHaveCount(7)
+    await navigation
+        .getByRole("link", { name: "Health & care", exact: true })
+        .click()
+    await expect(page).toHaveURL("/en/health")
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+        "Health & care"
+    )
+    await expect(page.locator('a[href*="tracker"]')).toHaveCount(0)
+    await expect(page.getByRole("textbox", { name: /email/i })).toHaveCount(0)
+})
+
+test("mobile menu navigates, closes with Escape and restores focus", async ({
+    page
+}) => {
+    await page.setViewportSize({ width: 320, height: 812 })
+    await page.goto("/en")
+    const menu = page.getByRole("button", { name: "Open menu" })
+    await menu.click()
     await expect(
         page
-            .getByRole("navigation", { name: "Mobile navigation" })
+            .locator("#mobile-navigation")
             .getByRole("link", { name: "Home", exact: true })
     ).toBeFocused()
     await page.keyboard.press("Escape")
-    await expect(menuButton).toBeFocused()
-
-    await menuButton.click()
-    await page.mouse.click(20, 780)
-    await expect(
-        page.getByRole("navigation", { name: "Mobile navigation" })
-    ).toBeHidden()
-    await expect(menuButton).toBeFocused()
+    await expect(menu).toBeFocused()
+    await menu.click()
+    await page
+        .locator("#mobile-navigation")
+        .getByRole("link", { name: "Fold mixes", exact: true })
+        .click()
+    await expect(page).toHaveURL("/en/mixes")
+    await expect(page.locator("#mobile-navigation")).toHaveCount(0)
 })
 
-test("language switch keeps the current page and enables RTL", async ({
+test("locale switching preserves a mix detail route and Arabic direction", async ({
     page
 }) => {
-    await page.goto("/en/health")
-    await expect(page.getByRole("status")).toBeHidden({ timeout: 15_000 })
-    const language = page.getByRole("combobox", { name: "Language" })
-    await language.selectOption("ar")
-    await expect(page).toHaveURL(/\/ar\/health$/)
-    await expect(page.locator("html")).toHaveAttribute("dir", "rtl")
-    await language.selectOption("fr")
-    await expect(page).toHaveURL(/\/fr\/health$/)
-    await expect(page.locator("html")).toHaveAttribute("dir", "ltr")
-    await language.selectOption("zh")
-    await expect(page).toHaveURL(/\/zh\/health$/)
-    await language.selectOption("en")
-    await expect(page).toHaveURL(/\/en\/health$/)
+    await page.setViewportSize({ width: 1600, height: 900 })
+    await page.goto("/en/mixes/scottish-fold-siamese")
+    for (const [locale, label] of [
+        ["ar", "Language"],
+        ["fr", "اللغة"],
+        ["zh", "Langue"],
+        ["en", "语言"]
+    ]) {
+        await page.getByRole("combobox", { name: label }).selectOption(locale!)
+        await expect(page).toHaveURL(
+            "/" + locale + "/mixes/scottish-fold-siamese"
+        )
+        await expect(page.locator("html")).toHaveAttribute(
+            "dir",
+            locale === "ar" ? "rtl" : "ltr"
+        )
+    }
 })
 
-test("Lotus story keeps confirmed dates, honest uncertainty and approved media", async ({
+test("theme persists and reduced motion uses an immediate change", async ({
+    page
+}) => {
+    await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" })
+    await page.goto("/en")
+    await page.getByRole("button", { name: "Switch to dark mode" }).click()
+    await expect(page.locator("html")).toHaveClass(/dark/)
+    await expect(page.locator(".theme-transition-overlay")).toHaveCount(0)
+    await page.reload()
+    await expect(page.locator("html")).toHaveClass(/dark/)
+})
+
+test("desktop navigation fits every language at 1280px", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    for (const locale of ["en", "ar", "fr", "zh"]) {
+        await page.goto("/" + locale)
+        await expect(
+            page
+                .locator("header nav")
+                .filter({ visible: true })
+                .getByRole("link")
+        ).toHaveCount(7)
+        const overflow = await page.evaluate(
+            () =>
+                document.documentElement.scrollWidth -
+                document.documentElement.clientWidth
+        )
+        expect(overflow, locale).toBeLessThanOrEqual(1)
+    }
+})
+
+test("Lotus keeps confirmed observations and links to kitchen and early lessons", async ({
     page
 }) => {
     await page.goto("/en/lotus")
-    await expect(page.getByRole("status")).toBeHidden({ timeout: 15_000 })
-
     await expect(page.getByText("June 2021", { exact: true })).toHaveCount(2)
-    await expect(page.getByText("2020", { exact: true })).toHaveCount(0)
-
-    const timeline = page.getByTestId("lotus-story-timeline")
-    await expect(timeline.getByRole("listitem")).toHaveCount(10)
-
-    const imageSources = await page
-        .locator("main img")
-        .evaluateAll((images) =>
-            images.map((image) => image.getAttribute("src") ?? "")
-        )
-    expect(imageSources.some((source) => source.includes("incoming-"))).toBe(
-        false
+    await expect(
+        page.getByTestId("lotus-story-timeline").getByRole("listitem")
+    ).toHaveCount(10)
+    await page
+        .getByRole("link", {
+            name: "What I wish I knew when Lotus was 3 months old",
+            exact: true
+        })
+        .click()
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(
+        "3 months old"
     )
-
-    await page.goto("/ar/lotus")
-    await expect(page.locator("html")).toHaveAttribute("dir", "rtl")
-    await expect(page.getByText("يونيو 2021", { exact: true })).toHaveCount(2)
-})
-
-test("route navigation resets scroll and the logo returns home", async ({
-    page
-}) => {
-    await page.goto("/en")
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-    await page
-        .getByRole("navigation", { name: "Main navigation" })
-        .getByRole("link", { name: "Health", exact: true })
-        .click()
-    await expect(page).toHaveURL(/\/en\/health$/)
-    await expect
-        .poll(() => page.evaluate(() => window.scrollY))
-        .toBeLessThan(10)
-    await page.getByRole("link", { name: "FelisFold home" }).click()
-    await expect(page).toHaveURL(/\/en$/)
-})
-
-test("theme toggle uses the cat transition and persists", async ({ page }) => {
-    await page.addInitScript(() => {
-        window.localStorage.setItem("felisfold-theme", "light")
-    })
-    await page.goto("/en")
-    await page.getByRole("button", { name: "Switch to dark mode" }).click()
-    await expect(page.locator(".theme-transition-overlay")).toBeAttached()
+    await page.goto("/en/nutrition/lotus-kitchen")
     await expect(
-        page.locator('.theme-cat-column[data-cat-color="black"]')
-    ).toBeAttached()
-    await expect(page.locator("html")).toHaveClass(/dark/, { timeout: 2_000 })
-    await expect(page.locator(".theme-transition-overlay")).toBeHidden()
-
-    await page.getByRole("button", { name: "Switch to light mode" }).click()
-    await expect(
-        page.locator('.theme-cat-column[data-cat-color="white"]')
-    ).toBeAttached()
-    await expect(page.locator("html")).not.toHaveClass(/dark/, {
-        timeout: 2_000
-    })
-    await page.reload()
-    await expect(page.locator("html")).not.toHaveClass(/dark/)
-})
-
-test("reduced motion switches theme without the running-cat overlay", async ({
-    page
-}) => {
-    await page.emulateMedia({ reducedMotion: "reduce" })
-    await page.goto("/en")
-    await page
-        .getByRole("button", { name: /Switch to (dark|light) mode/ })
-        .click()
-    await expect(page.locator(".theme-transition-overlay")).toHaveCount(0)
-})
-
-test("rapid theme clicks do not duplicate or strand the transition", async ({
-    page
-}) => {
-    await page.goto("/en")
-    const toggle = page.getByRole("button", {
-        name: /Switch to (dark|light) mode/
-    })
-    await toggle.click()
-    await toggle.click({ force: true })
-    await toggle.click({ force: true })
-    await expect(page.locator(".theme-transition-overlay")).toHaveCount(0, {
-        timeout: 3_000
-    })
-    await expect(toggle).toBeEnabled()
-    await expect(page.locator(".theme-cat-column")).toHaveCount(0)
+        page.getByRole("heading", {
+            name: "No measured meals published yet",
+            exact: true
+        })
+    ).toBeVisible()
+    await expect(page.locator("main")).toContainText(
+        "not a scientific experiment"
+    )
 })

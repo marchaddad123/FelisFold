@@ -4,9 +4,11 @@ const sourceFiles = [
     "app/data/healthTopics.ts",
     "app/data/creatorProfile.ts",
     "app/pages/[locale]/sources.vue",
-    "app/pages/[locale]/resources.vue"
+    "app/data/evidenceSources.ts"
 ]
 const knownBotProtectedUrls = new Set([
+    "https://www.aaha.org/resources/2021-aaha-aafp-feline-life-stage-guidelines/",
+    "https://www.aaha.org/resources/helping-your-cat-cope-with-veterinary-visits/",
     "https://journals.sagepub.com/doi/10.1177/1098612X241241951",
     "https://vgl.ucdavis.edu/",
     "https://vgl.ucdavis.edu/test/pkd1-cat",
@@ -17,8 +19,18 @@ const knownBotProtectedUrls = new Set([
 const sourceText = (
     await Promise.all(sourceFiles.map((file) => readFile(file, "utf8")))
 ).join("\n")
+const cornellBase =
+    "https://www.vet.cornell.edu/departments-centers-and-institutes/cornell-feline-health-center/health-information/feline-health-topics/"
+const cornellUrls = [...sourceText.matchAll(/cornellBase}([^`]+)`/g)].map(
+    (match) => cornellBase + match[1]
+)
 const externalUrls = [
-    ...new Set(sourceText.match(/https:\/\/[^"']+/g) ?? [])
+    ...new Set([
+        ...cornellUrls,
+        ...(sourceText.match(/https:\/\/[^"'`\s]+/g) ?? []).filter(
+            (url) => !url.includes("$") && url !== cornellBase
+        )
+    ])
 ].sort()
 
 const results = await Promise.all(

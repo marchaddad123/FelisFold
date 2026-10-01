@@ -1,3 +1,4 @@
+import { sitePagePaths } from "../app/data/siteRoutes.ts"
 import { chromium, request } from "@playwright/test"
 import { mkdir, writeFile } from "node:fs/promises"
 
@@ -8,40 +9,16 @@ const targetName = new URL(productionUrl).hostname.includes("127.0.0.1")
     : "production-qa"
 const outputDirectory = `test-results/${targetName}`
 const expectedLanguages = ["en", "ar", "fr", "zh"]
-const expectedPagePaths = [
-    "",
-    "/health",
-    "/care",
-    "/nutrition",
-    "/tracker",
-    "/lotus",
-    "/sources",
-    "/resources",
-    "/about",
-    "/contact",
-    "/search"
-]
-const expectedHealthSlugs = [
-    "osteochondrodysplasia",
-    "pain-and-mobility",
-    "vomiting",
-    "pkd",
-    "heart-health",
-    "ears-and-grooming",
-    "weight-and-quality-of-life",
-    "when-to-call-a-vet"
-]
-const expectedRoutes = expectedLanguages.flatMap((language) => [
-    ...expectedPagePaths.map((path) => `/${language}${path}`),
-    ...expectedHealthSlugs.map((slug) => `/${language}/health/${slug}`)
-])
+const expectedRoutes = expectedLanguages.flatMap((language) =>
+    sitePagePaths.map((path) => `/${language}${path}`)
+)
 const corePaths = [
     "/en",
     "/en/health",
     "/en/nutrition",
     "/en/lotus",
-    "/en/tracker",
-    "/en/resources",
+    "/en/scottish-fold",
+    "/en/mixes",
     "/en/about",
     "/en/contact",
     "/en/search",

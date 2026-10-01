@@ -1,4 +1,5 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
+import { editorialLabels } from "~/data/editorialHelpers"
 import { isLanguageCode } from "~/utils/languages"
 import { lotusTimeline } from "~/data/lotusTimeline"
 import { lotusMediaById } from "~/data/lotusMedia"
@@ -6,6 +7,7 @@ import { lotusNotebookSections, lotusPageText } from "~/data/lotusStory"
 
 definePageMeta({ validate: (route) => isLanguageCode(route.params.locale) })
 const { languageCode } = useCurrentLanguage()
+const { localizedPath } = useLocalizedPath()
 const pageText = computed(() => lotusPageText[languageCode.value])
 
 const portraitPhoto = lotusMediaById("lotus-portrait")
@@ -306,6 +308,16 @@ usePageSeo({
                 />
             </div>
         </section>
-        <TrustStrip />
+        <nav class="mx-auto flex max-w-6xl flex-wrap gap-6 px-4 py-8">
+            <NuxtLink
+                :to="localizedPath('/lotus/what-i-wish-i-knew')"
+                class="text-lilac inline-flex min-h-11 items-center underline underline-offset-4"
+                >{{ editorialLabels.lessons[languageCode] }}</NuxtLink
+            ><NuxtLink
+                :to="localizedPath('/nutrition/lotus-kitchen')"
+                class="text-lilac inline-flex min-h-11 items-center underline underline-offset-4"
+                >{{ editorialLabels.kitchen[languageCode] }}</NuxtLink
+            >
+        </nav>
     </div>
 </template>

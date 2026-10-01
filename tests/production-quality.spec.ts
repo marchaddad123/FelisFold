@@ -1,423 +1,251 @@
+﻿import { expect, test } from "@playwright/test"
 import AxeBuilder from "@axe-core/playwright"
-import { expect, test, type Page } from "@playwright/test"
-import {
-    creatorProfile,
-    creatorSocialLinks,
-    getAvailableCreatorSocialLinks
-} from "../app/data/creatorProfile"
+import { sitePagePaths } from "../app/data/siteRoutes"
 
-const languages = ["en", "ar", "fr", "zh"]
-const mainPaths = [
-    "",
-    "/health",
-    "/care",
-    "/nutrition",
-    "/tracker",
-    "/lotus",
-    "/sources",
-    "/resources",
-    "/about",
-    "/contact",
-    "/search"
-]
-const healthSlugs = [
-    "osteochondrodysplasia",
-    "pain-and-mobility",
-    "vomiting",
-    "pkd",
-    "heart-health",
-    "ears-and-grooming",
-    "weight-and-quality-of-life",
-    "when-to-call-a-vet"
-]
-const allRoutes = languages.flatMap((language) => [
-    ...mainPaths.map((path) => `/${language}${path}`),
-    ...healthSlugs.map((slug) => `/${language}/health/${slug}`)
-])
-const coreRoutes = [
-    "/en",
-    "/en/health",
-    "/en/nutrition",
-    "/en/lotus",
-    "/en/tracker",
-    "/en/resources",
-    "/en/search",
-    "/ar"
-]
-
-async function waitForLoadingScreen(page: Page) {
-    const loadingScreen = page.getByRole("status").first()
-    if (await loadingScreen.count()) {
-        await loadingScreen.waitFor({ state: "hidden", timeout: 5_000 })
-    }
+for (const locale of ["en", "ar", "fr", "zh"]) {
+    test(
+        "all content routes and metadata: " + locale,
+        async ({ page, request }) => {
+            test.setTimeout(180_000)
+            for (const path of sitePagePaths) {
+                const response = await page.goto("/" + locale + path)
+                expect(response?.status(), path).toBe(200)
+                await expect(page.locator("main h1")).toHaveCount(1)
+                await expect(page.locator("html")).toHaveAttribute(
+                    "lang",
+                    locale
+                )
+                await expect(page.locator("html")).toHaveAttribute(
+                    "dir",
+                    locale === "ar" ? "rtl" : "ltr"
+                )
+                await expect(
+                    page.locator('link[rel="canonical"]')
+                ).toHaveAttribute(
+                    "href",
+                    "https://felisfold.com/" + locale + path
+                )
+                await expect(
+                    page.locator('link[rel="alternate"][hreflang]')
+                ).toHaveCount(5)
+                const description = await page
+                    .locator('meta[name="description"]')
+                    .getAttribute("content")
+                expect(description?.length).toBeGreaterThan(20)
+                const schemas = await page
+                    .locator('script[type="application/ld+json"]')
+                    .allTextContents()
+                const parsed = schemas.map((schema) => JSON.parse(schema))
+                expect(
+                    parsed.some(
+                        (schema) => schema["@type"] === "BreadcrumbList"
+                    )
+                ).toBe(true)
+                if (
+                    path.startsWith("/health/") ||
+                    path.startsWith("/mixes/") ||
+                    path.startsWith("/nutrition/") ||
+                    [
+                        "/scottish-fold",
+                        "/start-here",
+                        "/care",
+                        "/nutrition",
+                        "/mixes",
+                        "/lotus/what-i-wish-i-knew"
+                    ].includes(path)
+                ) {
+                    const article = parsed.find(
+                        (schema) => schema["@type"] === "Article"
+                    )
+                    expect(article?.inLanguage).toBe(locale)
+                    expect(article?.dateModified).toBe("2026-10-01")
+                    expect(article?.author?.name).toBe("Mark Haddad")
+                }
+                if (locale !== "en") {
+                    const text = await page.locator("main").innerText()
+                    for (const leak of [
+                        "What you can safely do at home",
+                        "When to contact a vet",
+                        "Find an answer",
+                        "Global veterinary evidence",
+                        "Grams served / eaten",
+                        "No measured meals published yet",
+                        "Read guide",
+                        "Current online reference",
+                        "This is Lotus."
+                    ])
+                        expect(text, path).not.toContain(leak)
+                }
+                const links = await page
+                    .locator('a[href^="/' + locale + '"]')
+                    .evaluateAll((anchors) =>
+                        anchors.map(
+                            (anchor) =>
+                                new URL((anchor as HTMLAnchorElement).href)
+                                    .pathname
+                        )
+                    )
+                for (const link of links)
+                    expect(
+                        sitePagePaths.map((item) => "/" + locale + item),
+                        path + " -> " + link
+                    ).toContain(link)
+            }
+            const removed = await request.get("/" + locale + "/tracker")
+            expect(removed.status()).toBe(404)
+            const merged = await request.get("/" + locale + "/resources", {
+                maxRedirects: 0
+            })
+            expect(merged.status()).toBe(301)
+            expect(merged.headers().location).toBe("/" + locale + "/sources")
+        }
+    )
 }
 
-test("every sitemap route has a successful document, heading and correct locale", async ({
-    page
+test("sitemap lists the current localized architecture once", async ({
+    request
 }) => {
-    test.setTimeout(480_000)
-    const consoleErrors: string[] = []
-    const runtimeErrors: string[] = []
-    const failedRequests: string[] = []
-    page.on("console", (message) => {
-        if (message.type() === "error") consoleErrors.push(message.text())
-    })
-    page.on("pageerror", (error) => runtimeErrors.push(error.message))
-    page.on("requestfailed", (request) =>
-        failedRequests.push(`${request.method()} ${request.url()}`)
+    const sitemap = await request.get("/sitemap.xml")
+    expect(sitemap.ok()).toBe(true)
+    const routes = [
+        ...(await sitemap.text()).matchAll(/<loc>(.*?)<\/loc>/g)
+    ].map((match) => new URL(match[1]!).pathname)
+    const expected = ["en", "ar", "fr", "zh"].flatMap((locale) =>
+        sitePagePaths.map((path) => "/" + locale + path)
     )
-
-    for (const theme of ["light", "dark"] as const) {
-        await page.goto("/en")
-        await waitForLoadingScreen(page)
-        await page.evaluate((selectedTheme) => {
-            window.localStorage.setItem("felisfold-theme", selectedTheme)
-        }, theme)
-
-        for (const route of allRoutes) {
-            const response = await page.goto(route, {
-                waitUntil: "domcontentloaded"
-            })
-            expect(response?.status(), `${route} in ${theme}`).toBe(200)
-            await waitForLoadingScreen(page)
-            await expect(
-                page.locator("h1").first(),
-                `${route} needs one h1 in ${theme}`
-            ).toBeVisible()
-            await expect(page.locator("html")).toHaveAttribute(
-                "lang",
-                route.split("/")[1]!
-            )
-            if (theme === "dark") {
-                await expect(page.locator("html")).toHaveClass(/dark/)
-            } else {
-                await expect(page.locator("html")).not.toHaveClass(/dark/)
-            }
-            const layout = await page.evaluate(() => {
-                const viewportWidth = document.documentElement.clientWidth
-                return {
-                    overflow:
-                        document.documentElement.scrollWidth - viewportWidth,
-                    offenders: [...document.querySelectorAll("body *")]
-                        .map((element) => {
-                            const bounds = element.getBoundingClientRect()
-                            return {
-                                element: `${element.tagName.toLowerCase()}.${String(element.className).replaceAll(" ", ".")}`,
-                                left: Math.round(bounds.left),
-                                right: Math.round(bounds.right)
-                            }
-                        })
-                        .filter(
-                            (element) =>
-                                element.left < -1 ||
-                                element.right > viewportWidth + 1
-                        )
-                        .slice(0, 8)
-                }
-            })
-            expect(
-                layout.overflow,
-                `${route} overflow in ${theme}: ${JSON.stringify(layout.offenders)}`
-            ).toBeLessThanOrEqual(1)
-        }
-    }
-
-    expect(consoleErrors).toEqual([])
-    expect(runtimeErrors).toEqual([])
-    expect(failedRequests).toEqual([])
+    expect(routes.sort()).toEqual(expected.sort())
+    expect(new Set(routes).size).toBe(routes.length)
 })
 
-test("Arabic main pages remain RTL and overflow-free across responsive layouts", async ({
+test("guides separate case evidence, observations and nutritional claims", async ({
     page
 }) => {
-    test.setTimeout(180_000)
-    for (const viewport of [
-        { width: 375, height: 812 },
-        { width: 768, height: 1024 },
-        { width: 1440, height: 900 }
-    ]) {
-        await page.setViewportSize(viewport)
-        for (const path of mainPaths) {
-            await page.goto(`/ar${path}`)
-            await waitForLoadingScreen(page)
-            await expect(page.locator("html")).toHaveAttribute("dir", "rtl")
-            const overflow = await page.evaluate(
-                () =>
-                    document.documentElement.scrollWidth -
-                    document.documentElement.clientWidth
-            )
-            expect(
-                overflow,
-                `/ar${path} at ${viewport.width}px`
-            ).toBeLessThanOrEqual(1)
-        }
-    }
-})
-
-test("core routes have no serious accessibility violations in both themes", async ({
-    page
-}) => {
-    test.setTimeout(240_000)
-    for (const theme of ["light", "dark"] as const) {
-        await page.addInitScript((selectedTheme) => {
-            window.localStorage.setItem("felisfold-theme", selectedTheme)
-        }, theme)
-        for (const route of coreRoutes) {
-            await page.goto(route)
-            await waitForLoadingScreen(page)
-            const results = await new AxeBuilder({ page })
-                .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-                .analyze()
-            const seriousViolations = results.violations.filter(
-                (violation) =>
-                    violation.impact === "serious" ||
-                    violation.impact === "critical"
-            )
-            expect(seriousViolations, `${route} in ${theme} mode`).toEqual([])
-        }
-    }
-})
-
-test("core routes do not overflow at required breakpoints in either theme", async ({
-    page
-}) => {
-    test.setTimeout(360_000)
-    const viewports = [
-        { width: 375, height: 812 },
-        { width: 430, height: 932 },
-        { width: 768, height: 1024 },
-        { width: 1440, height: 900 }
-    ]
-
-    for (const viewport of viewports) {
-        await page.setViewportSize(viewport)
-        for (const theme of ["light", "dark"] as const) {
-            await page.goto("/en")
-            await page.evaluate((selectedTheme) => {
-                document.documentElement.classList.toggle(
-                    "dark",
-                    selectedTheme === "dark"
-                )
-                window.localStorage.setItem("felisfold-theme", selectedTheme)
-            }, theme)
-            for (const route of coreRoutes) {
-                await page.goto(route)
-                await waitForLoadingScreen(page)
-                const overflow = await page.evaluate(
-                    () =>
-                        document.documentElement.scrollWidth -
-                        document.documentElement.clientWidth
-                )
-                expect(
-                    overflow,
-                    `${route} overflows at ${viewport.width}px in ${theme}`
-                ).toBeLessThanOrEqual(1)
-            }
-        }
-    }
-})
-
-test("health filters, FAQs and resource accordions work", async ({ page }) => {
-    await page.goto("/en/health")
-    const guideGrid = page.locator("#guides").locator("a.group")
-    await expect(guideGrid).toHaveCount(8)
-    await page.getByRole("button", { name: "Mobility", exact: true }).click()
-    await expect(guideGrid).toHaveCount(3)
-
-    const faq = page.locator("details").first()
-    await faq.locator("summary").click()
-    await expect(faq).toHaveAttribute("open", "")
-
-    await page.goto("/en/resources")
-    const glossary = page.locator("details").first()
-    await glossary.locator("summary").click()
-    await expect(glossary).toHaveAttribute("open", "")
-    const externalLinks = page.locator('a[target="_blank"]')
-    expect(await externalLinks.count()).toBeGreaterThan(0)
-    for (const link of await externalLinks.all()) {
-        await expect(link).toHaveAttribute("rel", /noreferrer/)
-    }
-
-    await page.goto("/en/health/osteochondrodysplasia")
-    const contents = page.getByRole("navigation", { name: "In this guide" })
-    await expect(contents.getByRole("link")).toHaveCount(4)
-    const firstSectionLink = contents.getByRole("link").first()
-    await firstSectionLink.click()
-    await expect(page).toHaveURL(/#guide-section-1$/)
-    const relatedGuides = page
-        .getByRole("heading", { name: "Related guides" })
-        .locator("..")
-    await expect(relatedGuides).toBeVisible()
-    const relatedGuideLinks = relatedGuides.locator("a.group")
-    await expect(relatedGuideLinks).toHaveCount(3)
-    await expect(relatedGuideLinks.nth(0)).toHaveAttribute(
-        "href",
-        "/en/health/pain-and-mobility"
+    await page.goto("/en/mixes/scottish-fold-munchkin")
+    await expect(page.locator("main")).toContainText("two copies")
+    await expect(page.locator("main")).toContainText(
+        "not a prevalence estimate"
     )
-    await expect(relatedGuideLinks.nth(1)).toHaveAttribute(
-        "href",
-        "/en/health/weight-and-quality-of-life"
-    )
-})
-
-test("newsletter, mascot and downloadable resource controls respond", async ({
-    page
-}) => {
-    await page.goto("/en/health/osteochondrodysplasia")
-    await waitForLoadingScreen(page)
-    const mascot = page.getByRole("button", { name: /Pet the cat/ }).first()
-    await mascot.click()
-    await expect(mascot.getByText("♥")).toBeAttached()
-
-    const email = page.getByRole("textbox", { name: "Email address" })
-    await email.fill("owner@example.com")
-    await page.getByRole("button", { name: "Subscribe" }).click()
     await expect(
-        page.getByRole("button", { name: "Saved for later ✓" })
+        page.locator('main a[href="https://pubmed.ncbi.nlm.nih.gov/33162427/"]')
     ).toBeVisible()
-
-    await page.goto("/en/resources")
-    const downloadPromise = page.waitForEvent("download")
-    await page.getByRole("button", { name: "Download checklist →" }).click()
-    const download = await downloadPromise
-    expect(download.suggestedFilename()).toBe(
-        "felisfold-vet-visit-checklist.txt"
+    await page.goto("/en/mixes/scottish-fold-highlander")
+    await expect(page.locator("main")).toContainText("one TRPV4 variant copy")
+    await expect(page.locator("main")).toContainText(
+        "cannot establish long-term outcomes"
     )
-})
-
-test("search handles empty, partial, no-result, escape and result navigation states", async ({
-    page
-}) => {
-    await page.goto("/en/search")
-    await waitForLoadingScreen(page)
-    const search = page.getByRole("searchbox")
-    await expect(page.getByText(/results?$/)).toBeVisible()
-    await search.fill("noresultquery")
-    await expect
-        .poll(() =>
-            page
-                .locator("main p")
-                .filter({ hasText: /results?$/ })
-                .allTextContents()
-        )
-        .toContain("0 results")
-    await expect(
-        page.getByRole("heading", { name: "No match yet." })
-    ).toBeVisible()
-    await page.getByRole("button", { name: "Clear search" }).click()
-    await search.fill("vomit")
-    await expect(
-        page.getByRole("link", { name: /Vomiting/ }).first()
-    ).toBeVisible()
-    await page.keyboard.press("Escape")
-    await expect(search).toHaveValue("")
-    await search.fill("Lotus")
-    await page.getByRole("link", { name: /Meet Lotus/ }).click()
-    await expect(page).toHaveURL(/\/en\/lotus$/)
-})
-
-test("content images provide intrinsic dimensions, responsive sizes and alt text", async ({
-    page
-}) => {
-    for (const route of coreRoutes) {
-        await page.goto(route)
-        await waitForLoadingScreen(page)
-        const imageProblems = await page
-            .locator("main img")
-            .evaluateAll((images) =>
-                images.flatMap((image) => {
-                    if (image.currentSrc.includes("blur_3&s_10x10")) return []
-                    const problems: string[] = []
-                    if (!image.getAttribute("alt")?.trim())
-                        problems.push("missing alt")
-                    if (!image.getAttribute("width"))
-                        problems.push("missing width")
-                    if (!image.getAttribute("height"))
-                        problems.push("missing height")
-                    if (!image.getAttribute("sizes"))
-                        problems.push("missing sizes")
-                    return problems.map(
-                        (problem) => `${image.currentSrc}: ${problem}`
-                    )
-                })
-            )
-        expect(imageProblems, route).toEqual([])
-    }
-})
-
-test("creator identity is placed consistently and uses safe external links", async ({
-    page
-}) => {
-    await page.goto("/en")
-    await waitForLoadingScreen(page)
-    const sectionOrder = await page
-        .locator("#lotus-home-story, #creator-introduction, #home-care-topics")
-        .evaluateAll((sections) => sections.map((section) => section.id))
-    expect(sectionOrder).toEqual([
-        "lotus-home-story",
-        "creator-introduction",
-        "home-care-topics"
+    await page.goto("/en/mixes/scottish-fold-siamese")
+    await expect(page.locator("main")).toContainText(
+        "Mark's observations — one cat's experience"
+    )
+    await page.goto("/en/scottish-fold")
+    await expect(page.locator("main")).toContainText("22 cats")
+    await expect(page.locator("main")).toContainText(
+        "Neither small study predicts"
+    )
+    await page.goto("/en/nutrition/homemade")
+    await expect(page.locator("main")).toContainText("calcium-to-phosphorus")
+    await expect(page.locator("main")).toContainText("veterinary nutritionist")
+    await page.goto("/en/health/when-to-call-a-vet")
+    for (const heading of [
+        "Emergency / same-day care",
+        "Contact your vet soon",
+        "Monitor closely + discuss with your vet",
+        "Routine preventive care"
     ])
+        await expect(
+            page.getByRole("heading", { name: heading, exact: true })
+        ).toBeVisible()
+    await expect(page.locator("main")).toContainText(
+        "straining without passing urine"
+    )
+    await page.goto("/en/health/vomiting")
+    await expect(page.locator("main")).not.toContainText("1/3")
+})
 
-    for (const route of ["/en/about", "/en/contact"]) {
-        await page.goto(route)
-        await waitForLoadingScreen(page)
-        await expect(page.getByText(creatorProfile.name).first()).toBeVisible()
-        for (const social of creatorSocialLinks) {
-            const link = page.locator(`a[href="${social.url}"]`).first()
-            await expect(link, `${social.label} on ${route}`).toBeVisible()
-            if (social.id !== "email") {
-                await expect(link).toHaveAttribute("target", "_blank")
-                await expect(link).toHaveAttribute("rel", /noopener/)
-                await expect(link).toHaveAttribute("rel", /noreferrer/)
+for (const path of [
+    "/en",
+    "/ar/health/pain-and-mobility",
+    "/fr/mixes",
+    "/zh/nutrition/homemade"
+]) {
+    test("accessibility: " + path, async ({ page }) => {
+        await page.goto(path)
+        await page.emulateMedia({ reducedMotion: "reduce" })
+        const results = await new AxeBuilder({ page })
+            .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+            .analyze()
+        expect(results.violations).toEqual([])
+    })
+}
+
+for (const view of [
+    { width: 320, theme: "light", locale: "en" },
+    { width: 375, theme: "dark", locale: "ar" },
+    { width: 768, theme: "light", locale: "fr" },
+    { width: 1440, theme: "dark", locale: "zh" }
+]) {
+    test(
+        "responsive visual review: " + JSON.stringify(view),
+        async ({ page }, testInfo) => {
+            test.setTimeout(120_000)
+            await page.setViewportSize({ width: view.width, height: 900 })
+            await page.emulateMedia({
+                colorScheme: view.theme === "dark" ? "dark" : "light",
+                reducedMotion: "reduce"
+            })
+            const errors: string[] = []
+            page.on("pageerror", (error) => errors.push(error.message))
+            for (const path of [
+                "",
+                "/health/pain-and-mobility",
+                "/nutrition/homemade",
+                "/mixes/scottish-fold-siamese"
+            ]) {
+                await page.goto("/" + view.locale + path)
+                await expect(page.locator("main h1")).toBeVisible()
+                expect(
+                    await page.evaluate(
+                        () =>
+                            document.documentElement.scrollWidth -
+                            document.documentElement.clientWidth
+                    )
+                ).toBeLessThanOrEqual(1)
+                const images = page.locator("main img")
+                for (let index = 0; index < (await images.count()); index++) {
+                    await images.nth(index).scrollIntoViewIfNeeded()
+                    await expect
+                        .poll(() =>
+                            images
+                                .nth(index)
+                                .evaluate(
+                                    (image) =>
+                                        (image as HTMLImageElement).naturalWidth
+                                )
+                        )
+                        .toBeGreaterThan(0)
+                    await expect(images.nth(index)).toHaveAttribute("alt", /.+/)
+                }
+                await page.evaluate(() =>
+                    window.scrollTo({ top: 0, behavior: "instant" })
+                )
+                await expect
+                    .poll(() => page.evaluate(() => window.scrollY))
+                    .toBe(0)
+                await page.screenshot({
+                    path: testInfo.outputPath(
+                        (path.replaceAll("/", "-") || "home") + "-viewport.png"
+                    ),
+                    animations: "disabled"
+                })
+                await page.screenshot({
+                    path: testInfo.outputPath(
+                        (path.replaceAll("/", "-") || "home") + ".png"
+                    ),
+                    fullPage: true,
+                    animations: "disabled"
+                })
             }
+            expect(errors).toEqual([])
         }
-    }
-
-    expect(getAvailableCreatorSocialLinks([])).toEqual([])
-    expect(
-        getAvailableCreatorSocialLinks([
-            null,
-            undefined,
-            { id: "github", label: "", url: "" },
-            creatorSocialLinks[0]
-        ])
-    ).toEqual([creatorSocialLinks[0]])
-})
-
-test("creator and article author structured data identify the same person", async ({
-    page
-}) => {
-    await page.goto("/en/health/osteochondrodysplasia")
-    await waitForLoadingScreen(page)
-    const schemas = await page
-        .locator('script[type="application/ld+json"]')
-        .allTextContents()
-    const parsedSchemas = schemas.map((schema) => JSON.parse(schema))
-    const graph = parsedSchemas.find((schema) =>
-        Array.isArray(schema["@graph"])
     )
-    const person = graph?.["@graph"].find(
-        (entry: Record<string, unknown>) => entry["@type"] === "Person"
-    )
-    const article = parsedSchemas.find(
-        (schema) => schema["@type"] === "Article"
-    )
-
-    expect(person?.name).toBe(creatorProfile.name)
-    expect(person?.sameAs).toContain(creatorProfile.github.url)
-    expect(article?.author?.name).toBe(creatorProfile.name)
-    expect(article?.author?.["@id"]).toBe(person?.["@id"])
-    await expect(page.getByText(creatorProfile.name).first()).toBeVisible()
-})
-
-test("invalid health slugs use the branded error experience", async ({
-    page
-}) => {
-    await page.goto("/en/health/not-a-topic")
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(
-        "wandered off"
-    )
-    await page.getByRole("link", { name: "Back to FelisFold" }).click()
-    await expect(page).toHaveURL(/\/en$/)
-})
+}

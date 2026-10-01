@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { siteText, textForLanguage } from "~/data/siteText"
+import { editorialLabels } from "~/data/editorialHelpers"
 
 const route = useRoute()
 const { languageCode } = useCurrentLanguage()
@@ -11,40 +12,34 @@ const mobileNavigation = ref<HTMLElement>()
 
 const navigationItems = computed(() => [
     {
-        label: textForLanguage(siteText.navigation.home, languageCode.value),
+        label: siteText.navigation.home[languageCode.value],
         to: localizedPath("/")
     },
     {
-        label: textForLanguage(siteText.navigation.health, languageCode.value),
+        label: editorialLabels.breed[languageCode.value],
+        to: localizedPath("/scottish-fold")
+    },
+    {
+        label: editorialLabels.healthCare[languageCode.value],
         to: localizedPath("/health")
     },
     {
-        label: textForLanguage(
-            siteText.navigation.nutrition,
-            languageCode.value
-        ),
+        label: siteText.navigation.nutrition[languageCode.value],
         to: localizedPath("/nutrition")
     },
     {
-        label: textForLanguage(siteText.navigation.lotus, languageCode.value),
+        label: editorialLabels.mixes[languageCode.value],
+        to: localizedPath("/mixes")
+    },
+    {
+        label: siteText.navigation.lotus[languageCode.value],
         to: localizedPath("/lotus")
     },
     {
-        label: textForLanguage(siteText.navigation.tracker, languageCode.value),
-        to: localizedPath("/tracker")
-    },
-    {
-        label: textForLanguage(siteText.navigation.sources, languageCode.value),
-        to: localizedPath("/resources")
+        label: editorialLabels.sources[languageCode.value],
+        to: localizedPath("/sources")
     }
 ])
-
-const getStartedLabel = computed(() => {
-    if (languageCode.value === "ar") return "ابدأ الآن"
-    if (languageCode.value === "fr") return "Commencer"
-    if (languageCode.value === "zh") return "开始使用"
-    return "Get started"
-})
 
 function closeMobileMenu(restoreButtonFocus = false) {
     if (!mobileMenuIsOpen.value) return
@@ -106,19 +101,19 @@ onBeforeUnmount(() => {
         >
             <NuxtLink
                 :to="localizedPath('/')"
-                aria-label="FelisFold home"
+                :aria-label="`FelisFold — ${siteText.navigation.home[languageCode]}`"
                 class="shrink-0"
                 ><BrandLogo
             /></NuxtLink>
             <nav
-                class="hidden items-stretch self-stretch lg:flex"
-                aria-label="Main navigation"
+                class="hidden items-stretch self-stretch xl:flex"
+                :aria-label="editorialLabels.navigation[languageCode]"
             >
                 <NuxtLink
                     v-for="item in navigationItems"
                     :key="item.to"
                     :to="item.to"
-                    class="text-muted hover:text-ink relative flex items-center px-3 text-sm font-semibold transition"
+                    class="text-muted hover:text-ink relative flex items-center px-2 text-sm font-semibold transition"
                     active-class="text-ink after:absolute after:right-3 after:bottom-0 after:left-3 after:h-0.5 after:bg-peach"
                     >{{ item.label }}</NuxtLink
                 >
@@ -148,19 +143,18 @@ onBeforeUnmount(() => {
                 </NuxtLink>
                 <div class="hidden xl:block"><LanguageSwitcher /></div>
                 <ThemeToggle />
-                <NuxtLink
-                    :to="localizedPath('/tracker')"
-                    class="bg-peach text-on-accent hidden min-h-11 items-center rounded-full px-5 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 xl:inline-flex"
-                    >{{ getStartedLabel }}</NuxtLink
-                >
                 <button
                     ref="mobileMenuButton"
                     type="button"
-                    class="border-border bg-paper text-ink grid size-11 place-items-center rounded-full border lg:hidden"
+                    class="border-border bg-paper text-ink grid size-11 place-items-center rounded-full border xl:hidden"
                     :aria-expanded="mobileMenuIsOpen"
                     aria-haspopup="true"
                     aria-controls="mobile-navigation"
-                    :aria-label="mobileMenuIsOpen ? 'Close menu' : 'Open menu'"
+                    :aria-label="
+                        (mobileMenuIsOpen
+                            ? editorialLabels.closeMenu
+                            : editorialLabels.openMenu)[languageCode]
+                    "
                     @click="toggleMobileMenu"
                 >
                     <span class="grid gap-1.5" aria-hidden="true"
@@ -176,11 +170,11 @@ onBeforeUnmount(() => {
                 v-if="mobileMenuIsOpen"
                 id="mobile-navigation"
                 ref="mobileNavigation"
-                class="border-border bg-cream border-t px-4 py-4 shadow-xl lg:hidden"
+                class="border-border bg-cream max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t px-4 py-4 shadow-xl xl:hidden"
             >
                 <nav
                     class="mx-auto grid max-w-[90rem] gap-1"
-                    aria-label="Mobile navigation"
+                    :aria-label="editorialLabels.navigation[languageCode]"
                 >
                     <NuxtLink
                         v-for="item in navigationItems"
@@ -202,11 +196,7 @@ onBeforeUnmount(() => {
                         <span aria-hidden="true">⌕</span></NuxtLink
                     >
                     <div class="mt-3 flex items-center justify-between gap-3">
-                        <LanguageSwitcher /><NuxtLink
-                            :to="localizedPath('/tracker')"
-                            class="bg-peach text-on-accent inline-flex min-h-11 items-center rounded-full px-5 font-bold"
-                            >{{ getStartedLabel }}</NuxtLink
-                        >
+                        <LanguageSwitcher />
                     </div>
                 </nav>
             </div>
