@@ -223,7 +223,12 @@ for (const view of [
                                 )
                         )
                         .toBeGreaterThan(0)
-                    await expect(images.nth(index)).toHaveAttribute("alt", /.+/)
+                    const image = images.nth(index)
+                    if ((await image.getAttribute("aria-hidden")) === "true") {
+                        await expect(image).toHaveAttribute("alt", "")
+                    } else {
+                        await expect(image).toHaveAttribute("alt", /.+/)
+                    }
                 }
                 await page.evaluate(() =>
                     window.scrollTo({ top: 0, behavior: "instant" })

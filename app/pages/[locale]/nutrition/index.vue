@@ -21,5 +21,7 @@ const links = [
         :guide="nutritionGuide"
         :lotus-experience="lotusNutritionExperience"
         :links="links"
-    />
+        visual-layout="nutrition"
+        ><LotusFoodHistory /><NutritionKitchenSection /><CatRestingDivider
+    /></GuideArticle>
 </template>

@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { loadCatSequence } from "~/utils/catSequences"
+function warmCatSequence() {
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+        void loadCatSequence("walk").catch(() => undefined)
+}
 const { currentTheme, isThemeTransitionRunning, switchTheme } =
     useThemeTransition()
 const { languageCode } = useCurrentLanguage()
@@ -28,6 +33,8 @@ const buttonLabel = computed(() => {
         :aria-label="buttonLabel"
         :title="buttonLabel"
         :disabled="isThemeTransitionRunning"
+        @pointerenter="warmCatSequence"
+        @focus="warmCatSequence"
         @click="switchTheme"
     >
         <span

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { editorialLabels, translated as t } from "~/data/editorialHelpers"
+import { lotusPhoto } from "~/data/editorialVisuals"
 const { languageCode } = useCurrentLanguage()
 const { localizedPath } = useLocalizedPath()
 const questions = [
@@ -60,23 +61,40 @@ const questions = [
 ]
 </script>
 <template>
-    <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <h2 class="font-editorial text-ink text-3xl">
-            {{ editorialLabels.quickStart[languageCode] }}
-        </h2>
-        <ul class="border-border mt-5 grid gap-x-10 border-y sm:grid-cols-2">
-            <li
-                v-for="question in questions"
-                :key="question.path"
-                class="border-border border-b last:border-0 sm:last:border-b"
-            >
-                <NuxtLink
-                    :to="localizedPath(question.path)"
-                    class="text-lilac flex min-h-14 items-center justify-between gap-4 py-3 font-medium hover:underline"
-                    >{{ question.label[languageCode] }}
-                    <span aria-hidden="true">→</span></NuxtLink
-                >
-            </li>
-        </ul>
+    <section class="bg-sky-soft paper-texture px-5 pt-6 pb-12 sm:px-8 sm:pb-16">
+        <div class="mx-auto max-w-[80rem]">
+            <h2 class="text-ink text-3xl sm:text-4xl">
+                {{ editorialLabels.quickStart[languageCode] }}
+            </h2>
+            <div class="mt-8 grid gap-7 lg:grid-cols-[1.5fr_0.5fr]">
+                <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <li
+                        v-for="(question, index) in questions"
+                        :key="question.path"
+                    >
+                        <NuxtLink
+                            :to="localizedPath(question.path)"
+                            class="bg-paper text-ink hover:bg-peach-soft flex h-full min-h-24 items-center justify-between gap-4 rounded-xl p-5 transition"
+                            ><span
+                                class="text-peach font-handwritten text-2xl"
+                                aria-hidden="true"
+                                >0{{ index + 1 }}</span
+                            ><span
+                                class="grow text-sm leading-6 font-semibold"
+                                >{{ question.label[languageCode] }}</span
+                            ><span class="text-peach" aria-hidden="true"
+                                >→</span
+                            ></NuxtLink
+                        >
+                    </li>
+                </ul>
+                <EditorialPhoto
+                    :photo="lotusPhoto('lotus-home')"
+                    :caption="false"
+                    image-class="aspect-[16/7] rounded-[2rem] lg:aspect-auto lg:h-full"
+                    sizes="100vw lg:340px"
+                />
+            </div>
+        </div>
     </section>
 </template>

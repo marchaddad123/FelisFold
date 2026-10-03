@@ -12,4 +12,6 @@ const links = [
     { path: "/lotus", label: editorialLabels.lotus }
 ]
 </script>
-<template><GuideArticle :guide="breedGuide" :links="links" /></template>
+<template>
+    <GuideArticle :guide="breedGuide" :links="links" visual-layout="breed" />
+</template>

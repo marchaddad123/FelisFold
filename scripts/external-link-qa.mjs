@@ -2,7 +2,12 @@ import { readFile } from "node:fs/promises"
 
 const sourceFiles = [
     "app/data/healthTopics.ts",
+    "app/data/breedGuides.ts",
+    "app/data/foodGuides.ts",
+    "app/data/mixGuides.ts",
+    "app/data/cats.ts",
     "app/data/creatorProfile.ts",
+    "app/components/editorial/FoodExampleSection.vue",
     "app/pages/[locale]/sources.vue",
     "app/data/evidenceSources.ts"
 ]

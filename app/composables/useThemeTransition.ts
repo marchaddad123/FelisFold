@@ -1,16 +1,7 @@
+import { loadCatSequence } from "~/utils/catSequences"
 import type { ThemeName } from "~/types/foldcare"
 
 export type ThemeTransitionDirection = "to-light" | "to-dark" | null
-
-interface PageViewTransition {
-    finished: Promise<void>
-}
-
-type DocumentWithViewTransitions = Document & {
-    startViewTransition?: (
-        updatePage: () => void | Promise<void>
-    ) => PageViewTransition
-}
 
 export function useThemeTransition() {
     const { currentTheme, saveThemePreference } = useThemePreference()
@@ -21,63 +12,42 @@ export function useThemeTransition() {
     const isThemeTransitionRunning = computed(
         () => transitionDirection.value !== null
     )
-
-    function userPrefersReducedMotion(): boolean {
-        return (
-            import.meta.client &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        )
-    }
+    const transitionRequest = useState(
+        "foldcare-theme-transition-request",
+        () => 0
+    )
 
     async function switchTheme() {
+        if (isThemeTransitionRunning.value) return
+        const request = ++transitionRequest.value
         const nextTheme: ThemeName =
             currentTheme.value === "dark" ? "light" : "dark"
-
-        if (import.meta.server || userPrefersReducedMotion()) {
-            saveThemePreference(nextTheme)
+        // Theme state never waits for decorative animation to finish.
+        saveThemePreference(nextTheme)
+        if (
+            import.meta.server ||
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+            return
+        try {
+            await loadCatSequence("walk")
+        } catch {
             return
         }
-
-        if (isThemeTransitionRunning.value) return
-
+        if (
+            request !== transitionRequest.value ||
+            currentTheme.value !== nextTheme ||
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+            document.hidden
+        )
+            return
         transitionDirection.value =
             nextTheme === "light" ? "to-light" : "to-dark"
-
-        await nextTick()
-
-        const pageDocument = document as DocumentWithViewTransitions
-        if (!pageDocument.startViewTransition) return
-
-        document.documentElement.classList.add("theme-view-transition-active")
-
-        try {
-            const pageTransition = pageDocument.startViewTransition(
-                async () => {
-                    saveThemePreference(nextTheme)
-                    await nextTick()
-                }
-            )
-            await pageTransition.finished
-        } finally {
-            document.documentElement.classList.remove(
-                "theme-view-transition-active"
-            )
-
-            if (currentTheme.value === nextTheme) {
-                transitionDirection.value = null
-            }
-        }
     }
-
     function completeThemeTransition() {
-        if (!transitionDirection.value) return
-
-        const nextTheme: ThemeName =
-            transitionDirection.value === "to-light" ? "light" : "dark"
-        saveThemePreference(nextTheme)
+        transitionRequest.value++
         transitionDirection.value = null
     }
-
     return {
         currentTheme,
         transitionDirection: readonly(transitionDirection),

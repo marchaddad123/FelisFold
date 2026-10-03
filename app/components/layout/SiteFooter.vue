@@ -126,7 +126,7 @@ const footerGroups = computed(() => [
                         {{ creatorProfile.name }}
                     </p>
                     <p class="mt-1 text-sm text-[#9fb4aa]">
-                        {{ creatorProfile.onlineName }} ·
+                        <bdi dir="ltr">{{ creatorProfile.onlineName }}</bdi> ·
                         {{ creatorProfile.relationshipToLotus[languageCode] }} ·
                         {{ creatorProfile.location[languageCode] }}
                     </p>

@@ -1,5 +1,22 @@
 <script setup lang="ts">
 import { editorialLabels, translated as t } from "~/data/editorialHelpers"
+import { foldPhoto, lotusPhoto, visualLabels } from "~/data/editorialVisuals"
+import { healthTopics } from "~/data/healthTopics"
+import { mixProfiles } from "~/data/mixGuides"
+const featuredTopics = healthTopics.filter((topic) =>
+    [
+        "pain-and-mobility",
+        "vomiting",
+        "heart-health",
+        "ears-and-grooming"
+    ].includes(topic.slug)
+)
+const topicPhotos = [
+    lotusPhoto("lotus-posture"),
+    lotusPhoto("lotus-feeding"),
+    foldPhoto("fold-in-blanket"),
+    lotusPhoto("lotus-grooming")
+]
 const { languageCode } = useCurrentLanguage()
 const { localizedPath } = useLocalizedPath()
 const sections = [
@@ -96,30 +113,150 @@ const sections = [
 ]
 </script>
 <template>
-    <div class="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
-        <section
-            v-for="section in sections"
-            :key="section.path"
-            class="border-border grid gap-4 border-b py-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12"
-        >
-            <h2 class="font-editorial text-ink text-3xl leading-tight">
-                {{ section.heading[languageCode] }}
-            </h2>
-            <div>
-                <p class="text-muted leading-8">
-                    {{ section.copy[languageCode] }}
-                </p>
-                <NuxtLink
-                    :to="localizedPath(section.path)"
-                    class="text-lilac mt-3 inline-flex min-h-11 items-center underline underline-offset-4"
-                    >{{ section.heading[languageCode] }} →</NuxtLink
-                >
+    <div>
+        <section class="bg-cream px-5 py-12 sm:px-8 sm:py-16">
+            <div
+                class="mx-auto grid max-w-[80rem] items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]"
+            >
+                <EarShapeComparison />
+                <div>
+                    <h2 class="text-ink text-3xl sm:text-4xl">
+                        {{ sections[0]!.heading[languageCode] }}
+                    </h2>
+                    <p class="text-muted mt-5 leading-8">
+                        {{ sections[0]!.copy[languageCode] }}
+                    </p>
+                    <NuxtLink
+                        :to="localizedPath('/scottish-fold')"
+                        class="editorial-link text-peach mt-4 inline-flex min-h-11 items-center gap-3"
+                        >{{ editorialLabels.breed[languageCode] }} →</NuxtLink
+                    >
+                </div>
             </div>
         </section>
-        <NuxtLink
-            :to="localizedPath('/sources')"
-            class="text-lilac mt-5 inline-flex min-h-11 items-center underline underline-offset-4"
-            >{{ editorialLabels.sources[languageCode] }} →</NuxtLink
+        <section
+            class="bg-peach-soft paper-texture px-5 py-12 sm:px-8 sm:py-16"
         >
+            <div
+                class="mx-auto grid max-w-[80rem] gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center"
+            >
+                <div>
+                    <p class="text-peach mb-3 text-sm font-semibold">
+                        {{ visualLabels.realLife[languageCode] }}
+                    </p>
+                    <h2 class="text-ink text-3xl sm:text-4xl">
+                        {{ sections[2]!.heading[languageCode] }}
+                    </h2>
+                    <p class="text-muted mt-5 leading-8">
+                        {{ sections[2]!.copy[languageCode] }}
+                    </p>
+                    <NuxtLink
+                        :to="localizedPath('/lotus')"
+                        class="editorial-link text-peach mt-4 inline-flex min-h-11 items-center"
+                        >{{ editorialLabels.lotus[languageCode] }} →</NuxtLink
+                    >
+                </div>
+                <div class="grid grid-cols-2 gap-4 sm:gap-6">
+                    <div class="sm:-rotate-2">
+                        <p class="font-handwritten text-peach mb-3 text-lg">
+                            {{ visualLabels.then[languageCode] }}
+                        </p>
+                        <EditorialPhoto
+                            :photo="lotusPhoto('lotus-with-creator-younger')"
+                            frame
+                            image-class="aspect-[3/4]"
+                        />
+                    </div>
+                    <div class="sm:rotate-2">
+                        <p class="font-handwritten text-peach mb-3 text-lg">
+                            {{ visualLabels.now[languageCode] }}
+                        </p>
+                        <EditorialPhoto
+                            :photo="lotusPhoto('lotus-with-creator-now')"
+                            frame
+                            image-class="aspect-[3/4]"
+                        />
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="bg-sky-soft px-5 py-12 sm:px-8 sm:py-16">
+            <div class="mx-auto max-w-[80rem]">
+                <div class="grid items-end gap-4 lg:grid-cols-2">
+                    <h2 class="text-ink text-3xl sm:text-4xl">
+                        {{ sections[1]!.heading[languageCode] }}
+                    </h2>
+                    <NuxtLink
+                        :to="localizedPath('/health')"
+                        class="editorial-link text-peach inline-flex min-h-11 items-center lg:justify-self-end"
+                        >{{
+                            editorialLabels.healthCare[languageCode]
+                        }}
+                        →</NuxtLink
+                    >
+                </div>
+                <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                    <VisualGuideCard
+                        v-for="(topic, index) in featuredTopics"
+                        :key="topic.slug"
+                        :guide="topic"
+                        base-path="/health"
+                        :photo="topicPhotos[index]"
+                    />
+                </div>
+            </div>
+        </section>
+        <section class="bg-cream px-5 py-12 sm:px-8 sm:py-16">
+            <div
+                class="mx-auto grid max-w-[80rem] gap-10 lg:grid-cols-2 lg:items-center"
+            >
+                <div>
+                    <h2 class="text-ink text-3xl sm:text-4xl">
+                        {{ sections[3]!.heading[languageCode] }}
+                    </h2>
+                    <p class="text-muted mt-5 leading-8">
+                        {{ sections[3]!.copy[languageCode] }}
+                    </p>
+                    <NuxtLink
+                        :to="localizedPath('/nutrition')"
+                        class="editorial-link text-peach mt-4 inline-flex min-h-11 items-center"
+                        >{{ sections[3]!.heading[languageCode] }} →</NuxtLink
+                    >
+                </div>
+                <EditorialPhoto
+                    :photo="lotusPhoto('lotus-feeding')"
+                    image-class="aspect-[16/10] rounded-[2rem]"
+                />
+            </div>
+        </section>
+        <WavySectionDivider tone="sky" class="bg-cream" />
+        <CatRestingDivider class="bg-sky-soft" />
+        <section class="bg-sky-soft px-5 py-12 sm:px-8 sm:py-16">
+            <div class="mx-auto max-w-[80rem]">
+                <div class="grid gap-5 lg:grid-cols-2">
+                    <h2 class="text-ink text-3xl sm:text-4xl">
+                        {{ sections[4]!.heading[languageCode] }}
+                    </h2>
+                    <p class="text-muted leading-8">
+                        {{ sections[4]!.copy[languageCode] }}
+                    </p>
+                </div>
+                <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                    <VisualGuideCard
+                        v-for="profile in mixProfiles"
+                        :key="profile.slug"
+                        :guide="profile"
+                        base-path="/mixes"
+                        :photo="
+                            profile.slug === 'scottish-fold-siamese'
+                                ? lotusPhoto('lotus-portrait')
+                                : undefined
+                        "
+                        mix
+                    />
+                </div>
+            </div>
+        </section>
+        <EditorialTrustStrip />
     </div>
 </template>

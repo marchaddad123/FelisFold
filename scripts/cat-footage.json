@@ -1,0 +1,38 @@
+{
+    "feed": {
+        "creator": "Thirdman",
+        "sourceUrl": "https://www.pexels.com/video/cat-eating-from-a-bowl-8944057/",
+        "downloadUrl": "https://videos.pexels.com/video-files/8944057/8944057-uhd_3840_2160_25fps.mp4",
+        "file": "feed-original.mp4",
+        "start": 0,
+        "duration": 8,
+        "filter": "fps=25,crop=2600:1300:780:630,scale=640:320"
+    },
+    "walk": {
+        "creator": "Ileana Bondor",
+        "sourceUrl": "https://www.pexels.com/video/cat-walking-on-top-of-fence-10296775/",
+        "downloadUrl": "https://videos.pexels.com/video-files/10296775/10296775-hd_1920_1080_30fps.mp4",
+        "file": "walk-original.mp4",
+        "start": 1.6,
+        "duration": 0.72,
+        "filter": "fps=25,scale=640:360"
+    },
+    "play": {
+        "creator": "cottonbro studio",
+        "sourceUrl": "https://www.pexels.com/video/playing-bait-with-a-cat-6864989/",
+        "downloadUrl": "https://videos.pexels.com/video-files/6864989/uhd_25fps.mp4",
+        "file": "play-original.mp4",
+        "start": 0,
+        "duration": 5,
+        "filter": "fps=25,scale=480:-2,crop=480:640:0:250"
+    },
+    "jump": {
+        "creator": "Ileana Bondor",
+        "sourceUrl": "https://www.pexels.com/video/cat-walking-on-top-of-fence-10296775/",
+        "downloadUrl": "https://videos.pexels.com/video-files/10296775/10296775-hd_1920_1080_30fps.mp4",
+        "file": "walk-original.mp4",
+        "start": 0.4,
+        "duration": 1,
+        "filter": "fps=25,scale=640:360"
+    }
+}

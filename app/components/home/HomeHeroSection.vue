@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { editorialLabels, translated } from "~/data/editorialHelpers"
+import { lotusPhoto, visualLabels } from "~/data/editorialVisuals"
 const { languageCode } = useCurrentLanguage()
 const { localizedPath } = useLocalizedPath()
 const title = translated(
@@ -23,54 +24,23 @@ const startLabel = translated(
 </script>
 
 <template>
-    <section
-        class="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[1.25fr_0.75fr] lg:items-center lg:gap-14"
+    <EditorialHeroSection
+        :title="title"
+        :eyebrow="editorialLabels.breed"
+        :copy="introduction"
+        :photo="lotusPhoto('lotus-portrait')"
+        :note="visualLabels.why"
+        :links="[
+            { path: '/scottish-fold', label: startLabel },
+            { path: '/lotus', label: editorialLabels.lotus }
+        ]"
     >
-        <div>
-            <p class="text-lilac text-sm font-medium">
-                {{ editorialLabels.breed[languageCode] }} · FelisFold
-            </p>
-            <h1
-                class="font-editorial text-ink mt-4 text-4xl leading-tight tracking-tight sm:text-5xl lg:text-6xl"
-            >
-                {{ title[languageCode] }}
-            </h1>
-            <p class="text-muted mt-5 max-w-xl text-lg leading-8">
-                {{ introduction[languageCode] }}
-            </p>
-            <div class="mt-7 flex flex-wrap gap-x-6 gap-y-2">
-                <NuxtLink
-                    :to="localizedPath('/scottish-fold')"
-                    class="bg-peach text-on-accent inline-flex min-h-12 items-center rounded-full px-6 font-semibold"
-                    >{{ startLabel[languageCode] }} →</NuxtLink
-                >
-                <NuxtLink
-                    :to="localizedPath('/lotus')"
-                    class="text-lilac inline-flex min-h-12 items-center underline underline-offset-4"
-                    >{{ editorialLabels.lotus[languageCode] }}</NuxtLink
-                >
-            </div>
-            <NuxtLink
+        <template #byline
+            ><NuxtLink
                 :to="localizedPath('/start-here')"
-                class="text-lilac mt-5 inline-flex min-h-11 items-center underline underline-offset-4"
-                >{{ editorialLabels.start[languageCode] }}</NuxtLink
-            >
-        </div>
-        <figure>
-            <NuxtImg
-                src="/images/lotus/lotus-home.jpg"
-                :alt="editorialLabels.photoAlt[languageCode]"
-                width="1152"
-                height="1536"
-                sizes="100vw sm:80vw lg:420px"
-                format="webp"
-                preload
-                fetchpriority="high"
-                class="aspect-[4/5] w-full rounded-3xl object-cover object-[center_37%]"
-            />
-            <figcaption class="text-muted mt-3 text-sm">
-                {{ editorialLabels.photoAlt[languageCode] }}
-            </figcaption>
-        </figure>
-    </section>
+                class="editorial-link text-peach mt-5 inline-flex min-h-11 items-center text-sm"
+                >{{ editorialLabels.start[languageCode] }} →</NuxtLink
+            ></template
+        >
+    </EditorialHeroSection>
 </template>

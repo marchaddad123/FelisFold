@@ -2,6 +2,7 @@
 import { evidenceSources } from "~/data/evidenceSources"
 import { healthTopics } from "~/data/healthTopics"
 import { editorialLabels, translated as t } from "~/data/editorialHelpers"
+import { lotusPhoto, visualLabels } from "~/data/editorialVisuals"
 import { isLanguageCode } from "~/utils/languages"
 definePageMeta({ validate: (route) => isLanguageCode(route.params.locale) })
 const { languageCode } = useCurrentLanguage()
@@ -33,33 +34,61 @@ usePageSeo({
 })
 </script>
 <template>
-    <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        <h1 class="font-editorial text-ink text-4xl sm:text-5xl">
-            {{ editorialLabels.sources[languageCode] }}
-        </h1>
-        <p class="text-muted mt-5 text-lg leading-8">
-            {{ introduction[languageCode] }}
-        </p>
-        <p class="text-muted mt-5 leading-8">{{ reviewNote[languageCode] }}</p>
-        <nav class="mt-5 flex flex-wrap gap-5">
-            <NuxtLink
-                :to="localizedPath('/scottish-fold')"
-                class="text-lilac inline-flex min-h-11 items-center underline"
-                >{{ editorialLabels.breed[languageCode] }}</NuxtLink
-            ><NuxtLink
-                :to="localizedPath('/mixes')"
-                class="text-lilac inline-flex min-h-11 items-center underline"
-                >{{ editorialLabels.mixes[languageCode] }}</NuxtLink
-            ><NuxtLink
-                :to="localizedPath('/lotus')"
-                class="text-lilac inline-flex min-h-11 items-center underline"
-                >{{ editorialLabels.lotus[languageCode] }}</NuxtLink
-            >
-        </nav>
-        <HealthSourceList
-            :sources="allSources"
-            reviewed-on="2026-10-01"
-            class="mt-8"
-        />
+    <div>
+        <EditorialHeroSection
+            :title="
+                t(
+                    'Sources & research',
+                    'المصادر والأبحاث',
+                    'Sources et recherche',
+                    '资料与研究'
+                )
+            "
+            :eyebrow="visualLabels.evidence"
+            :copy="introduction"
+            :photo="lotusPhoto('lotus-glasses')"
+            :note="visualLabels.trust"
+            :links="[{ path: '/health', label: editorialLabels.healthCare }]"
+        >
+            <template #byline>
+                <a
+                    href="#full-citations"
+                    class="text-peach mt-5 inline-flex min-h-11 items-center underline underline-offset-4"
+                    >{{ editorialLabels.sources[languageCode] }} ↓</a
+                >
+            </template>
+        </EditorialHeroSection>
+        <SourceEditorialSections />
+        <section id="full-citations" class="bg-cream px-5 py-12 sm:px-8">
+            <div class="mx-auto max-w-[80rem]">
+                <p class="text-muted mb-7 max-w-3xl leading-8">
+                    {{ reviewNote[languageCode] }}
+                </p>
+                <HealthSourceList
+                    :sources="allSources"
+                    reviewed-on="2026-10-01"
+                /><NuxtLink
+                    :to="localizedPath('/scottish-fold')"
+                    class="editorial-link text-peach mt-5 inline-flex min-h-11 items-center"
+                    >{{ editorialLabels.breed[languageCode] }} →</NuxtLink
+                >
+            </div>
+        </section>
+        <EditorialTrustStrip />
+        <section class="px-5 py-12 sm:px-8">
+            <div class="mx-auto max-w-[80rem]">
+                <h2 class="font-display mb-5 text-2xl font-semibold">
+                    {{
+                        t(
+                            "Photo, video & sound credits",
+                            "مصادر الصور والفيديو والصوت",
+                            "Crédits photo, vidéo et son",
+                            "照片、视频与声音来源"
+                        )[languageCode]
+                    }}
+                </h2>
+                <CatMediaCredits />
+            </div>
+        </section>
     </div>
 </template>

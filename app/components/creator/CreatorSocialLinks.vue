@@ -74,7 +74,7 @@ function linkDetail(link: CreatorSocialLink): string {
                         variant === 'icons',
                     'border-border bg-paper text-ink hover:border-peach hover:text-peach inline-flex min-h-11 items-center gap-2 rounded-full border px-3 text-sm font-semibold':
                         variant === 'compact',
-                    'border-border bg-paper text-ink hover:border-peach flex min-h-16 items-center gap-3 border p-3':
+                    'border-border bg-paper text-ink hover:border-peach flex min-h-16 items-center gap-3 border p-3 [--color-ink:var(--color-social-ink)] [--color-muted:var(--color-social-detail)]':
                         variant === 'full'
                 }"
             >
@@ -90,9 +90,11 @@ function linkDetail(link: CreatorSocialLink): string {
                         <strong class="block text-sm">{{
                             linkLabel(link)
                         }}</strong>
-                        <span class="text-muted block truncate text-xs">{{
-                            linkDetail(link)
-                        }}</span>
+                        <span
+                            dir="ltr"
+                            class="text-muted block truncate text-xs"
+                            >{{ linkDetail(link) }}</span
+                        >
                     </span>
                 </template>
             </a>

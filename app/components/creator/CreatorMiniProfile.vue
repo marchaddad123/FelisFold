@@ -57,7 +57,7 @@ const profileCopy = computed(() =>
 
 <template>
     <aside
-        class="border-border bg-paper grid gap-5 border-y py-6 sm:grid-cols-[6rem_1fr] sm:items-center"
+        class="border-border bg-paper grid gap-5 border-y p-4 sm:grid-cols-[6rem_1fr]"
         :aria-label="text.eyebrow"
     >
         <NuxtImg

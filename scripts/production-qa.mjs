@@ -7,7 +7,8 @@ const productionUrl =
 const targetName = new URL(productionUrl).hostname.includes("127.0.0.1")
     ? "local-qa"
     : "production-qa"
-const outputDirectory = `test-results/${targetName}`
+const outputDirectory =
+    process.env.FELISFOLD_QA_OUTPUT_DIRECTORY ?? `test-results/${targetName}`
 const expectedLanguages = ["en", "ar", "fr", "zh"]
 const expectedRoutes = expectedLanguages.flatMap((language) =>
     sitePagePaths.map((path) => `/${language}${path}`)
@@ -95,12 +96,17 @@ for (const path of routes) {
             timeout: 30_000
         })
         status = response?.status() ?? 0
-        const loader = page.locator('[role="status"]').first()
+        const loader = page.locator(".loading-stage")
         if (await loader.count()) {
             await loader.waitFor({ state: "hidden", timeout: 12_000 })
         }
     } catch (error) {
         navigationError = error instanceof Error ? error.message : String(error)
+    }
+
+    for (const photo of await page.locator("main img").all()) {
+        await photo.scrollIntoViewIfNeeded()
+        await photo.evaluate((image) => image.decode()).catch(() => {})
     }
 
     const result = await page.evaluate(() => ({
@@ -114,7 +120,7 @@ for (const path of routes) {
         brokenImages: [...document.images]
             .filter((image) => image.complete && image.naturalWidth === 0)
             .map((image) => image.currentSrc || image.src),
-        loaderVisible: Boolean(document.querySelector('[role="status"]'))
+        loaderVisible: Boolean(document.querySelector(".loading-stage"))
     }))
 
     routeResults.push({
@@ -131,7 +137,9 @@ for (const path of routes) {
 }
 
 const screenshotResults = []
-for (const theme of ["light", "dark"]) {
+for (const theme of process.env.FELISFOLD_QA_SCREENSHOTS === "0"
+    ? []
+    : ["light", "dark"]) {
     for (const viewport of screenshotViewports) {
         for (const path of corePaths) {
             const page = await browser.newPage({ viewport })
@@ -142,7 +150,7 @@ for (const theme of ["light", "dark"]) {
                 waitUntil: "domcontentloaded",
                 timeout: 30_000
             })
-            const loader = page.locator('[role="status"]').first()
+            const loader = page.locator(".loading-stage")
             if (await loader.count()) {
                 await loader.waitFor({ state: "hidden", timeout: 12_000 })
             }

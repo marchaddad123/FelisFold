@@ -1,13 +1,21 @@
 <script setup lang="ts">
-defineProps<{
-    title: string
-    items: string[]
-}>()
+withDefaults(
+    defineProps<{
+        title: string
+        items: string[]
+        headingLevel?: 2 | 3
+    }>(),
+    { headingLevel: 2 }
+)
 </script>
 
 <template>
     <article class="border-border bg-paper rounded-[2rem] border p-6 sm:p-8">
-        <h2 class="text-ink text-2xl font-semibold">{{ title }}</h2>
+        <component
+            :is="`h${headingLevel}`"
+            class="text-ink text-2xl font-semibold"
+            >{{ title }}</component
+        >
         <ul class="mt-5 space-y-4">
             <li
                 v-for="item in items"

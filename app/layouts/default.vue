@@ -21,5 +21,6 @@ onMounted(loadThemePreference)
             <slot />
         </main>
         <SiteFooter />
+        <ClientOnly><GlobalCatVisits /></ClientOnly>
     </div>
 </template>

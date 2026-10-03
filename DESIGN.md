@@ -1,8 +1,8 @@
-# FoldCare design system
+# FelisFold design system
 
 ## Product feeling
 
-FoldCare should feel warm, playful, calm, credible, and easy to read.
+FelisFold should feel warm, playful, calm, credible, and easy to read.
 
 It must not look like a hospital brochure, but serious medical information must never be hidden behind cuteness.
 
@@ -29,14 +29,14 @@ Touch targets should normally be at least 44px high/wide.
 
 ## Themes
 
-FoldCare supports light and dark mode.
+FelisFold supports light and dark mode.
 
 The theme toggle is playful:
 
-- switching to light uses white running cats and a light wipe
-- switching to dark uses black running cats and a dark wipe
+- switching to light uses photographed cats and a light wipe
+- switching to dark uses the same unfiltered footage and a dark wipe
 
-The effect must be fast and non-blocking. Under `prefers-reduced-motion`, switch themes immediately without the running animation.
+The theme itself changes immediately. Three realistic cats cross over six seconds; the effect never blocks page interaction. Each cat uses complete video frames with coherent anatomy and real body motion. Independently rotated photograph cutouts do not meet this requirement. Under `prefers-reduced-motion`, switch themes immediately without the crossing animation.
 
 ## Loading
 
@@ -68,10 +68,11 @@ Use semantic color variables so the same components work in light and dark mode.
 Main families:
 
 - cream / paper
-- lilac
-- sage
-- peach
-- soft sky
+- deep forest green / sage
+- terracotta / rust
+- warm peach
+- powder / sky blue
+- restrained lilac for existing links
 - restrained danger red
 
 ## Typography
@@ -131,3 +132,15 @@ Check:
 Do not solve layout problems with arbitrary offsets, hidden overflow tricks, duplicated content, giant `!important` stacks, or one-device fixes.
 
 Fix the structure.
+
+## Editorial rebuild conventions
+
+Use large editorial serif headings, readable sans-serif paragraphs and short handwritten annotations. Medical paragraphs stay in the sans-serif body style. Alternate photo-led splits, diagrams, reading columns, scrapbook strips and compact topic grids. A meaningful visual should interrupt every two or three substantial text sections. Do not fill space with unrelated stock imagery.
+
+Reuse `EditorialHeroSection`, `EditorialPhoto`, `PhotoStoryStrip`, `VisualGuideCard`, the evidence badges and the genetics/care/vet SVG explanations. Keep pages responsible for their own composition. Original source content and source links remain authoritative.
+
+Light sections alternate warm paper, cream, sky and peach with occasional forest panels. Dark mode retains warm charcoal, deep blue, deep green and rust; photography stays unfiltered. Mobile drops botanical ornaments and most overlapping notes, while keeping photos, readable hierarchy and normal-flow captions.
+
+A single `GlobalCatVisits` component lives in the shared layout. Random visits keep the approved complete-cat snack, toy play and jump footage; the rejected global stroll is removed. Jump and toy play can appear anywhere within the viewport below navigation. Snacks use the four physical corners, with inward-facing cats and the bowl anchored to the photographed muzzle. All visitors are decorative and allow clicks through to the page. Visits stop when hidden, resized, or interrupted by a theme change or dialog. Random timing and quiet meowing are enabled by default; audio waits for a trusted click, tap or key press to satisfy browser playback rules. Cat controls appear only in development. Reduced motion disables automatic visits and keeps developer-invited cats still. Page-local `CatRestingDivider` illustrations remain quiet. Generic mascots may face either direction, while Lotus photographs, brand names, and medical diagrams remain unreflected.
+
+External photos are local, have intrinsic dimensions and responsive `NuxtImg` sources, and show source/license attribution. Only the true hero image is preloaded. Generic Fold imagery must never be presented as Lotus or a documented mixed-breed case. Full metadata lives in `public/images/editorial/credits.json`; design-only PNGs live in `docs/design-references/`.

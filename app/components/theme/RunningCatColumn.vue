@@ -1,29 +1,41 @@
 <script setup lang="ts">
-withDefaults(
-    defineProps<{
-        catColor?: "white" | "black"
-    }>(),
-    {
-        catColor: "white"
-    }
+import { themeCatDuration } from "~/data/catSequences"
+const seconds = useAnimationClock()
+const { completeThemeTransition } = useThemeTransition()
+const viewportWidth = ref(1440)
+const catWidth = computed(() => (viewportWidth.value < 640 ? 230 : 320))
+const distance = computed(
+    () =>
+        (viewportWidth.value + catWidth.value) *
+        Math.min(1, seconds.value / themeCatDuration)
 )
-
-const catCount = 10
-const horizontalOffsets = [0, -7, 5, -3, 7, 0, -6, 4, -2, 6]
+watch(seconds, (value) => {
+    if (value >= themeCatDuration) completeThemeTransition()
+})
+onMounted(() => {
+    viewportWidth.value = window.innerWidth
+})
 </script>
 
 <template>
-    <div class="theme-cat-column" :data-cat-color="catColor" aria-hidden="true">
+    <div
+        class="theme-cat-column"
+        aria-hidden="true"
+        :style="{
+            width: `${catWidth}px`,
+            transform: `translate3d(${distance - catWidth}px, 0, 0)`
+        }"
+    >
         <div
-            v-for="catNumber in catCount"
+            v-for="catNumber in 3"
             :key="catNumber"
             class="theme-running-cat"
-            :style="{
-                '--cat-delay': `${catNumber * -45}ms`,
-                '--cat-offset': `${horizontalOffsets[catNumber - 1]}px`
-            }"
+            :style="{ transform: `translateX(${(catNumber - 2) * 24}px)` }"
         >
-            <RunningCatIcon :cat-color="catColor" />
+            <RealisticCat
+                sequence="walk"
+                :seconds="seconds + catNumber * 0.1"
+            />
         </div>
     </div>
 </template>

@@ -42,7 +42,9 @@ const toneClasses = computed(() => {
             section.tone && section.tone !== 'plain' ? 'p-6 sm:p-8' : ''
         ]"
     >
-        <h2 class="font-editorial text-ink text-3xl tracking-tight">
+        <h2
+            class="font-editorial text-ink text-3xl tracking-tight [overflow-wrap:anywhere]"
+        >
             {{ heading }}
         </h2>
         <div class="text-muted mt-4 space-y-4 text-[1.02rem] leading-8">

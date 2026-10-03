@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { LotusExperienceContent } from "~/types/foldcare"
 
-const props = defineProps<{ content: LotusExperienceContent }>()
+const props = withDefaults(
+    defineProps<{ content: LotusExperienceContent; headingLevel?: 2 | 3 }>(),
+    { headingLevel: 2 }
+)
 const { languageCode } = useCurrentLanguage()
 
 const localizedContent = computed(() => ({
@@ -30,9 +33,12 @@ const toneClasses = computed(() => {
         <p class="text-ink text-xs font-bold tracking-[0.18em] uppercase">
             {{ localizedContent.eyebrow }}
         </p>
-        <h2 class="font-editorial text-ink mt-2 text-3xl leading-tight">
+        <component
+            :is="`h${headingLevel}`"
+            class="font-editorial text-ink mt-2 text-3xl leading-tight"
+        >
             {{ localizedContent.title }}
-        </h2>
+        </component>
         <p class="text-muted mt-3 leading-7">{{ localizedContent.copy }}</p>
         <ul
             v-if="localizedContent.bullets.length"

@@ -234,36 +234,15 @@ usePageSeo({
         </section>
 
         <section class="paper-texture px-4 py-14 sm:px-6 sm:py-20">
-            <div
-                class="mx-auto grid max-w-[90rem] gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-start"
-            >
-                <LotusObservationCard
-                    :title="pageText.observationsTitle"
-                    :items="pageText.observations"
-                />
-                <div>
-                    <p
-                        class="text-peach text-xs font-bold tracking-[0.2em] uppercase"
-                    >
-                        {{ pageText.notebookEyebrow }}
-                    </p>
-                    <h2
-                        class="font-editorial text-ink mt-2 text-4xl leading-tight"
-                    >
-                        {{ pageText.notebookTitle }}
-                    </h2>
-                    <p class="text-muted mt-3 leading-7">
-                        {{ pageText.notebookCopy }}
-                    </p>
-                    <div class="mt-7 grid gap-5 sm:grid-cols-2">
-                        <LotusExperiencePanel
-                            v-for="section in lotusNotebookSections"
-                            :key="section.title.en"
-                            :content="section"
-                        />
-                    </div>
-                </div>
-            </div>
+            <LotusCareNotebook
+                class="mx-auto max-w-[90rem]"
+                :eyebrow="pageText.notebookEyebrow"
+                :heading="pageText.notebookTitle"
+                :copy="pageText.notebookCopy"
+                :observations-title="pageText.observationsTitle"
+                :observations="pageText.observations"
+                :sections="lotusNotebookSections"
+            />
         </section>
 
         <section
@@ -319,5 +298,6 @@ usePageSeo({
                 >{{ editorialLabels.kitchen[languageCode] }}</NuxtLink
             >
         </nav>
+        <EditorialTrustStrip />
     </div>
 </template>
